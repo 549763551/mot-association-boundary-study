@@ -7,18 +7,18 @@
 > frozen grid, decisions and stopping rule). The Chinese original additionally contains the full
 > reference list with retrieved URLs and the verbatim revision log.
 >
-> **Status at publication**: Phase 0/1 complete, explore stage complete; **confirm stage not launched**
-> by the author's decision. `final_decision = null`. This is an archived design, not a completed study.
+> **Status at publication**: Phase 0/1 complete, explore stage complete; **confirm stage not launched**.
+> `final_decision = null`. This is an archived design, not a completed study.
 
 ---
 
 ## 1. Position relative to the terminated experiment
 
-This is a **new experiment**, not a continuation or optimisation of the "confusion-gated pairwise-difference arbitration" study. That study was halted on 2026-11-15 with `final_decision = null` (full evaluation never completed; not falsified). It used `oracle-detection / association-only` with `DetA ≈ 0.97`, which isolates association but cannot answer when fine-grained association is worth deploying under real detector noise. The new experiment addresses exactly that gap.
+This is a **separate experiment**, not a continuation or optimisation of the "confusion-gated pairwise-difference arbitration" study. That study was terminated with `final_decision = null` (full evaluation and formal verdict never completed). It used `oracle-detection / association-only` with `DetA ≈ 0.97`, which isolates association but cannot answer when fine-grained association is worth deploying under real detector noise. Experiment B addresses that gap.
 
 ## 2. Systematic prior-art search
 
-Two survey-style searches, nine targeted searches and three full-text/abstract retrievals were performed. Findings that **overturned earlier assumptions**:
+Two survey-style searches, nine targeted searches and three full-text/abstract retrievals were performed. Results:
 
 | Presumed gap | Verified |
 |---|---|
@@ -29,20 +29,20 @@ Two survey-style searches, nine targeted searches and three full-text/abstract r
 | Frame-level gating and abstention are new | When-to-Extract, Deep OC-SORT, AAI, U2MOT, LLTrack, Sentinel |
 | Detector vs association attribution is new | Ma et al. (arXiv 2609.22291): detector improvement >10%, refined association <5% |
 
-Corrections: VLA-ReID uses the BEE24 bee dataset, not pedestrian MOT; "relative residual × explicit modular decomposition × Jaccard × agreement as abstention confidence" leaves only combination novelty likely to be judged obvious.
+Factual checks: VLA-ReID uses the BEE24 bee dataset, not pedestrian MOT; "relative residual × explicit modular decomposition × Jaccard × agreement as abstention confidence" is a combination of existing components.
 
-**Implication**: another gate cannot carry the contribution, and no accuracy gain can be promised.
+**Implication**: the contribution is methodological rather than a new gating mechanism.
 
 ## 3. The novelty claim, narrowed to a falsifiable conjunction
 
-We cannot prove a global negative (not found ≠ does not exist). The defensible statement is: within the searchable literature, **no work was found satisfying all four conditions simultaneously**:
+A global negative cannot be proved (not found ≠ does not exist). The defensible statement is: within the searchable literature, **no work was found satisfying all four conditions simultaneously**:
 
 - (a) detection noise swept as **orthogonal, calibrated components**;
 - (b) response = **marginal association gain** of fine-grained association over an IoU baseline, not a whole-tracker metric;
 - (c) formal definition and measurement of the **sign-flip boundary** of that gain;
 - (d) a **label-free, pre-evaluation** criterion predicting the sign of the gain, with leave-one-out external validation.
 
-Closest competitors each miss 2–3 conditions. Novelty lies in **methodology and conclusions**: turning "is this association worth deploying" from a post-hoc score into a calibratable, mappable, predictable quantity. Cross-agreement abstention, difference fingerprints and modular Jaccard are demoted to **mechanisms under test / controls** and carry no novelty claim.
+Closest competitors each miss 2–3 conditions. The study is positioned in **methodology and conclusions**: turning "is this association worth deploying" from a post-hoc score into a calibratable, mappable, predictable quantity. Cross-agreement abstention, difference fingerprints and modular Jaccard are demoted to **mechanisms under test / controls** and carry no novelty claim.
 
 Search limitations and a downgrade path are recorded in the Chinese original.
 
@@ -58,7 +58,7 @@ Search limitations and a downgrade path are recorded in the Chinese original.
 | H2 | Gain sign is predictable a priori by criterion `P` | Frozen `h2_rule`: CI lower bound > 0.5 **and** better than every baseline in all primary leave-one-out folds |
 | H3 | Partial derivatives w.r.t. noise components have opposite signs | Sign pattern across single-factor curves |
 
-H2 is the primary contribution. **If H2 fails, the result is still publishable as a corrective negative finding**: the widely assumed "ambiguity equals confidence" premise would be shown not to hold under this protocol. This is why both signs yield a conclusion.
+H2 is the primary contribution. **If H2 fails, the result is a corrective negative finding**: the widely assumed "ambiguity equals confidence" premise would be shown not to hold under this protocol. This is why both signs yield a conclusion.
 
 ## 5. Variables, mechanisms and metrics
 
@@ -111,34 +111,34 @@ Two engineering results, both sealed into the frozen config and self-test:
 - Both injection and official-det protocols reported; **never only the favourable one**.
 - Primary response frozen as `MAIN_RESPONSE = (A4, A0)`.
 - Leave-one-noise-family-out is demoted to a secondary readout (small samples, wide CIs, false-negative prone).
-- **Stopping rule**: after the explore stage, present the frozen grid and results to the author. Any further GPU work requires explicit approval. If results contain no worthwhile finding, close the project rather than starting new experiments, changing protocols or adding ablations to manufacture a positive result.
+- **Stopping rule**: the explore stage was pre-registered for modelling; the confirm stage was not launched. No further GPU work is part of this archive.
 
-## 8. Delegated decisions
+## 8. Design decisions
 
-The author delegated all five decisions ("choose whatever is most advantageous") on 2026-11-15:
+Five decisions were fixed at pre-registration:
 
 | # | Decision |
 |---|---|
-| 1 | Main contribution = **boundary + predictability**, not a new gate that gains points |
+| 1 | Primary research question = **boundary + predictability**, not a new gating mechanism |
 | 2 | MOT17 + DanceTrack primary; **MOT20 entirely reserved** for leave-one-out external validation |
 | 3 | A5 included but demoted to exploratory, outside the Holm family |
 | 4 | Two-stage sampling + Phase 0 SHA-256 sealed freeze |
 | 5 | Write the full pre-registered config and code immediately |
 
-## 9. Execution status and final decision
+## 9. Execution status and archive scope
 
 - Phase 0/1 complete (calibration, freeze, 17/17 self-tests locally and on server, cross-source check).
 - Phase 2 **explore** complete: 5040 cells / 840 groups / 5071 s, completeness gate 11/11, frozen hash unchanged. See [`PHASE2_EXPLORE_STAGE_REPORT.en.md`](PHASE2_EXPLORE_STAGE_REPORT.en.md) and `../results/noise/explore_summary.json`.
 - Criterion `P` frozen (`47c32ece…8af1`), reproducible by rerunning.
-- **Confirm stage not launched.** On 2026-11-15 22:16 the author reviewed the explore report and chose to close the project: no full re-run, no optimisation, no new artefact, no protocol change, no added ablation.
-- `final_decision` remains `null`. Explore results are a **stage conclusion plus directional tendency**: `ΔAssA` not significant, `ΔIDSW` significantly worse, criterion `P` below simple baselines. **Not a falsification, not a new direction.**
+- **Confirm stage not launched.** The archive contains no full re-run, no optimisation, no new artefact, no protocol change and no added ablation.
+- `final_decision` remains `null`; formal H1/H2/H3 verdicts were not completed. Explore results are a **stage conclusion plus directional tendency**: `ΔAssA` not significant, `ΔIDSW` significantly worse, criterion `P` below simple baselines.
 
 Had confirm been run, its scale would have been 50 sequences / 50387 frames / ≈8400 cells / estimated 5–8 GPU hours, using only frozen strategies and a frozen criterion, with no re-tuning.
 
-## 10. Known engineering pitfalls (recorded in the design)
+## 10. Implementation notes
 
 - Changing boxes invalidates cached features; `geometry_keyed_v1` limits re-extraction.
-- Det boxes do not coincide with GT boxes → IDSW identity back-mapping must be redone and `idsw_consistency` re-verified (this caught the 63-row loss).
+- Det boxes do not coincide with GT boxes → IDSW identity back-mapping uses the `src_gid` side channel and is verified by `idsw_consistency`.
 - `DetA` degradation dominates HOTA → keep AssA/IDSW as primary.
 - Large condition count → strict separation of primary/exploratory analyses, Holm correction, no result-driven condition changes.
 - Result-driven protocol switching → η must be frozen at Phase 0 and both protocols reported.

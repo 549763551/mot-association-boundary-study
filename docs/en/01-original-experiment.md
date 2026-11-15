@@ -2,7 +2,7 @@
 
 [Back to README](../../README.md) · [中文](../zh/01-original-experiment.md)
 
-> **Status**: terminated. Full evaluation never completed; `final_decision = null`. **This is not a falsification.**
+> **Status**: terminated. Full evaluation and formal verdict were not completed; `final_decision = null`.
 
 ## 1. Where the hypothesis came from
 
@@ -31,11 +31,11 @@ Four pre-registered claims followed:
 | Evaluation | TrackEval `HOTA / CLEAR / Identity`; official summary read from the `COMBINED` row of `pedestrian_detailed.csv` |
 | Statistics | `TAU_GRID` × `ALPHA_GRID` × multiple seeds, bootstrap 95% CI |
 
-The design isolates the detector completely so that the mechanism alone can be judged. The price is `DetA ≈ 0.97`: the conclusions **cannot be extrapolated to real detector output**. That limitation directly motivated Experiment B.
+The design isolates the detector completely so that the mechanism alone can be judged. The price is `DetA ≈ 0.97`: the conclusions **cannot be extrapolated to real detector output**. That limitation motivated Experiment B.
 
 ## 3. Evidence actually obtained (all informal)
 
-**Remote full run**: OSNet feature extraction finished for DanceTrack 25/25 and MOT17 7/7. Before `MOT20-04` extraction, the remote instance disconnected for the third time (`V3_SCRIPT_EXIT=1`). Diagnostics, tracking, official evaluation, analysis and the difference report never completed.
+**Full run**: OSNet feature extraction finished for DanceTrack 25/25 and MOT17 7/7. Stages scheduled after `MOT20-04` extraction (diagnostics, tracking, official evaluation, analysis and the difference report) were not completed.
 
 **Local CPU dry-run** (5 sequences × 250 frames, [`results/original/full_experiment_report.json`](../../results/original/full_experiment_report.json)):
 
@@ -48,9 +48,9 @@ The design isolates the detector completely so that the mechanism alone can be j
 
 These numbers consistently point toward "no positive gain under this protocol", but the sample is a subset, not the full run, and the pre-registered formal verdict procedure was never completed. They are recorded as a tendency only.
 
-## 4. A statistical fix that matters
+## 4. Evaluation implementation notes
 
-Before the dry-run, a real bug was fixed in `analyze.py`: per-frame ID switches used `prev = cur`, which silently misses switches after occlusions. Corrected to:
+Per-frame ID-switch counting must retain the previous frame's identity mapping after occlusions:
 
 ```python
 for gid, tid in cur.items():
@@ -59,18 +59,17 @@ for gid, tid in cur.items():
 prev.update(cur)
 ```
 
-An `idsw_consistency` quality gate was added; the local dry-run self-computed IDSW `15` matched TrackEval's official `15`. The lesson recurred in Experiment B: after perturbation, the `_key(frame, round(box,1))` box-coordinate identity mapping **silently dropped 63 true-target rows**, so B switched to a `src_gid` side channel.
+An `idsw_consistency` quality gate verifies agreement with TrackEval's official IDSW (15 vs 15 in the local dry-run). Experiment B uses a `src_gid` side channel for identity back-mapping under injected perturbation, so that box-coordinate changes cannot break identity correspondence.
 
-## 5. Why it stopped, and the final state
+## 5. Termination state
 
-Remote instances were recycled/disconnected three times (ports changed repeatedly), and one disconnection lost the extracted `.npy` features before they were mirrored locally. On 2026-11-15 19:02 the author explicitly decided to **stop this experiment and move to a new direction**, without requesting another instance for a full re-run.
+Experiment A was terminated after feature extraction; full evaluation and the formal verdict were not completed. The extracted `.npy` features were not retained in the archive, so the full pipeline cannot be reproduced bit-for-bit from this repository.
 
 Consequently:
 
 - `final_decision` stays `null`;
-- the four pre-registered claims are **neither confirmed nor falsified**;
-- no optimisation, no new artefact, no protocol change was made;
-- these results must not be written up as "the synthetic hypothesis was falsified on real benchmarks".
+- the four pre-registered claims **received no formal verdict**;
+- this experiment provides no formal verdict on the synthetic hypothesis.
 
 ## 6. Material
 

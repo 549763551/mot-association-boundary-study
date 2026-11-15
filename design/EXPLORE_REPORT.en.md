@@ -9,7 +9,7 @@ numbers are in `../results/noise/explore_summary.json`.
 - Generated: 2026-11-15T14:04:20+00:00
 - Frozen config: `71dc864eb6718fac6c0244aac328b964eb608138ce6e92416f516ebb4be76663` (r4)
 - Data: 5040 cells / 840 groups / 10 sequences; all completeness and hash checks passed
-- **Per design §4.4 this stage fits criterion P and estimates rough boundary positions only. Formal H1/H2/H3 verdicts are issued once, in the confirm stage — which was never launched.**
+- **Per design §4.4 this stage fits criterion P and estimates rough boundary positions only. Formal H1/H2/H3 verdicts were not issued in this archive.**
 
 ## Primary response
 

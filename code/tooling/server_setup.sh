@@ -34,7 +34,7 @@ echo "=== [2/5] 资产大小校验 ==="
 python - <<'PY'
 import os
 # MOT17.zip accepts two byte-identical-content sources:
-#   5860214001 = motchallenge.net original (used on the first instance)
+#   5860214001 = motchallenge.net original
 #   5868011787 = hf-mirror mrhwl123/MOT17 repack; same 33705 jpg / 21 gt.txt,
 #                plus labels_with_ids/ YOLO labels and an extra images/ level.
 # MOT17Labels.zip is optional: the hf-mirror repack already contains gt.txt.

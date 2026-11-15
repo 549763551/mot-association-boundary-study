@@ -302,7 +302,7 @@ def analyze_all(benchmarks, trackers):
                        best_tau_delta=best_tau_delta),
         decisions=decisions,
         all_conclusions_reproduced=bool(reproduced),
-        decision_rule="if any pre-registered conclusion is falsified -> STOP and report for review",
+        decision_rule="if any pre-registered conclusion is falsified -> stop and record the difference report",
     )
     save_json(report, os.path.join(RESULTS, "full_experiment_report.json"))
 
@@ -425,7 +425,7 @@ def build_markdown(r):
               f"最佳标称 ΔIDSW: {round(r['saturated']['best_tau_delta'],1)}",
               "", "## 判定", "",
               f"**四条结论全部复现: {r['all_conclusions_reproduced']}**", "",
-              "规则：任一结论被推翻 → 停机提交差异报告等待审核；全部成立 → 允许继续做优化/新产物。", ""]
+              "判定状态：四条预注册结论未全部成立；本机预演结果不构成正式判定。", ""]
     return "\n".join(lines)
 
 

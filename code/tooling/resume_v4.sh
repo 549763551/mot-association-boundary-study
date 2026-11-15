@@ -4,21 +4,16 @@
 # 用法: bash /d/mot_exp_assets/resume_v4.sh [ssh_alias]
 #       SKIP_SETUP=1 bash /d/mot_exp_assets/resume_v4.sh radeon-cloud   # 同实例续跑
 #       MOT_SKIP_FEATURE_PULL=1 bash /d/mot_exp_assets/resume_v4.sh radeon-cloud
-#         = 流量模式：关闭 2~3 GB 特征回拉/回推（本机只剩几十 MB 小结果），
-#           代价是实例被回收时需重抽约 70 分钟 GPU。
+#         = 精简同步模式：跳过 2~3 GB 特征镜像，只保留小结果文件。
 #
-# v4 相对 v3 的关键修正（承接第三次实例断连）：
-#   * 事故复盘：v3 在 MOT20-04 之前被远端断开，本机只留下 features 的
-#     「路径+尺寸清单」，35 个 .npy 全丢，每次都要重抽约 70 分钟 GPU。
-#     根因是我为省 3.6 MB/s 回拉带宽把 .npy 排除在镜像外——判断失误：
-#     三基准特征实际仅约 2~3 GB，全量同步约 3~14 分钟，远低于重抽成本。
-#   * 新增 pull_features.py：跨平台 tar 流式增量镜像，按 (路径, 尺寸) 比对，
+# v4 的增量镜像设计：
+#   * pull_features.py：跨平台 tar 流式增量镜像，按 (路径, 尺寸) 比对，
 #     只传变化的 .npy；--push 可把本机已有特征推回全新实例。
-#   * extract 改为「逐序列一次调用 + 每序列立即回拉」（extract_features.py
-#     新增 --seqs 参数，向后兼容）。实例随时被回收，本机最多只丢当前序列。
+#   * extract 采用「逐序列一次调用 + 每序列立即回拉」（extract_features.py
+#     的 --seqs 参数，向后兼容），每个序列完成后立即同步。
 #   * 续跑时先 --push 恢复本机特征，extract_one 自动 skip 已有 .npy，
 #     因此跨实例续跑只补缺失序列。
-#   * 保留 v3 的：服务器侧 hf-mirror 直下 15 GB、阶段幂等、逐基准拆分、
+#   * 数据集由服务器端公开镜像直下 15 GB，阶段幂等、逐基准拆分、
 #     每阶段 checkpoint + 时间戳快照。
 set -uo pipefail
 
@@ -39,7 +34,7 @@ mkdir -p "$DEST" "$DEST/logs" "$ASSETS/stage_logs"
 
 sync_features() {
   if [ "${MOT_SKIP_FEATURE_PULL:-0}" = "1" ]; then
-    echo "--- [feature-sync] SKIP (MOT_SKIP_FEATURE_PULL=1, 流量模式) ---"
+    echo "--- [feature-sync] SKIP (MOT_SKIP_FEATURE_PULL=1, minimal sync) ---"
     return 0
   fi
   echo "--- [feature-sync] 服务器 -> 本机 ---"
@@ -168,7 +163,7 @@ fi
 
 echo "=== [5a] 把本机已有特征推回服务器（跨实例续跑的关键） ==="
 if [ "${MOT_SKIP_FEATURE_PULL:-0}" = "1" ]; then
-  echo "  SKIP (MOT_SKIP_FEATURE_PULL=1：流量模式，不传 2~3 GB 特征)"
+  echo "  SKIP (MOT_SKIP_FEATURE_PULL=1: feature mirroring disabled)"
 else
   python "$ASSETS/pull_features.py" --push || echo "  warn: feature push failed, will re-extract from scratch"
 fi
@@ -227,8 +222,8 @@ else:
     print("decisions:", r["decisions"])
     print("all_conclusions_reproduced:", r["all_conclusions_reproduced"])
     print("idsw_consistency:", r.get("idsw_consistency"))
-    print("BRANCH:", "结论一致 -> 可做优化/新产物" if r["all_conclusions_reproduced"]
-          else "结果改变 -> 停机提交差异报告，等待用户审核")
+    print("BRANCH:", "all conclusions reproduced" if r["all_conclusions_reproduced"]
+          else "difference report recorded")
 PY
 
 echo "############################################################"

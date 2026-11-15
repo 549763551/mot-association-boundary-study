@@ -34,8 +34,8 @@ OPTS = ["-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=no",
 # txt (~2 GB) are recomputable and stay inventory-only. Feature .npy are NO
 # LONGER handled here: v4 mirrors them separately with pull_features.py,
 # which streams each completed sequence back immediately (one .npy per
-# sequence, size-stable, ~0.7-3 GB total). The third instance outage showed
-# that inventory-only features cost ~70 min of GPU re-extraction every time.
+# sequence, size-stable, ~0.7-3 GB total). Mirroring completed sequences avoids
+# re-extracting features after an environment rebuild.
 SKIP_SUFFIXES = (".npy", ".pth", ".zip", ".whl", ".tar.gz", ".bin")
 MAX_BYTES = 2 * 1024 * 1024
 SKIP_INVENTORY = BASE + "/large_file_inventory.txt"

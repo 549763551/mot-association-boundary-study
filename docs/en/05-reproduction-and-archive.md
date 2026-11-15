@@ -2,16 +2,11 @@
 
 [Back to README](../../README.md) · [中文](../zh/05-reproduction-and-archive.md)
 
-## 1. Archive status (effective 2026-11-15 22:16)
+## 1. Archive status
 
-After reviewing the explore-stage report, the author explicitly chose to **close the project**:
-
-- **The confirm stage is not launched.** No further instance request, no full re-run, no optimisation, no new artefact, no protocol change, no added ablation.
-- `final_decision` stays `null`. All material is a "stage conclusion plus directional tendency" — **not** formal H1/H2/H3 verdicts, **not** "falsified", and not repackaged as "a new direction found".
-- Server confirmed `NO_EXPERIMENT_PROCESS` (no experiment processes); the backup daemon was stopped and is no longer idling.
-- Local mirror: 41 files, `cells_explore` **10 shards / 5040 cells** complete; 79 timestamped snapshots accumulated; the final backup pass returned `no change` (server and local fully synchronised).
-
-**Any further action requires fresh explicit authorisation.** This repository is a static archive; its data will not be updated automatically.
+- Experiment A was terminated before full evaluation; Experiment B's confirm stage was not launched. `final_decision` is `null` for both.
+- This repository is a static archive. Its material is a "stage conclusion plus directional tendency"; formal H1/H2/H3 verdicts, Holm correction and leave-one-out external validation do not exist here.
+- Experiment B's explore output is complete: 5040 cells / 10 per-sequence JSONL shards; the frozen config and frozen criterion digests are consistent and independently checkable.
 
 ## 2. Integrity checks
 
@@ -65,8 +60,7 @@ Original environment: Ubuntu 24.04 / Python 3.12 / ROCm 7.2.1 / torch 2.9.1+rocm
 **Not included in this release**: datasets, weights, `.npy` features, SSH private keys, server addresses. Absolute paths in scripts were replaced with `/path/to/...`-style placeholders; change them to your own paths when reproducing (most scripts honour the `MOT_EXP_ROOT` environment variable).
 
 ```bash
-# 1) Datasets: download directly on the server from a public mirror,
-#    avoiding a 15 GB upload from your machine
+# 1) Datasets: download directly from a public mirror
 bash code/tooling/bootstrap_new_instance.sh <ssh-alias>
 bash code/tooling/download_datasets.sh          # run ON the server, 4-way resume
 
@@ -83,17 +77,15 @@ python code/noise/run_phase2.py --stage explore --backend gpu --resume
 python code/noise/analyze_explore.py
 ```
 
-[`code/noise/server_verify.py`](../../code/noise/server_verify.py) recomputes `Θ̂` on the server and compares it with the local calibration (the original run obtained field-by-field agreement over 25 sequences). `backup_experiment.py` / `backup_watch.sh` in `code/tooling/` provide "one step, one local backup" incremental mirroring, with results sharded per sequence to stay under the single-file size cap.
-
-> **Bandwidth note**: datasets are downloaded on the server; only scripts and source (tens of KB) are pushed from the local machine, and result pulls are small files. Set `MOT_SKIP_FEATURE_PULL=1` to skip mirroring 2–3 GB of `.npy` features; the cost is ~70 GPU minutes of re-extraction if the instance is recycled.
+[`code/noise/server_verify.py`](../../code/noise/server_verify.py) recomputes `Θ̂` and compares it with the calibration (field-by-field agreement over 25 sequences). `backup_experiment.py` / `backup_watch.sh` in `code/tooling/` provide incremental mirroring, with results sharded per sequence as JSONL.
 
 ## 4. Known limitations (read before reproducing)
 
-- Experiment A's `.npy` features were lost when an instance was recycled before mirroring, so A's full pipeline **cannot be reproduced bit-for-bit from this repository**; only code, dry-run results and state records remain.
+- Experiment A's `.npy` features were not retained in the archive, so A's full pipeline **cannot be reproduced bit-for-bit from this repository**; only code, dry-run results and state records remain.
 - Experiment B's explore stage **is fully reproducible** (frozen grid + frozen config + 5040 cells + frozen criterion).
 - The confirm stage never ran, so no full-scale metrics, Holm correction or leave-one-out validation results exist.
 - `background/` contains synthetic E1–E4 as the **motivation** for the two real-benchmark experiments; it is not a third independent experiment.
-- All paths, ports, instance IDs and host addresses were redacted. Numbers inside `results/noise/cells_explore/` (e.g. `HOTA_TP = 34586.0`) are **measured data**, not unredacted port numbers.
+- All paths and host information were redacted; numbers inside `results/noise/cells_explore/` are measured data.
 
 ## 5. Suggested citation wording
 

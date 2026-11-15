@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the synthetic-vs-real difference report for user review."""
+"""Generate the synthetic-vs-real difference report."""
 import os
 import json
 
@@ -77,9 +77,9 @@ def main():
     L += ["# 合成假设 → 真基准：结论比对报告", "",
           f"**判定：四条结论全部复现 = {reproduced}**", ""]
     if reproduced:
-        L += ["按约定：结论一致，进入优化 / 新产物阶段。", ""]
+        L += ["四条预注册结论全部成立。", ""]
     else:
-        L += ["按约定：**结论在真数据上被推翻，实验到此停止，本文件提交审核，暂不做优化或新产物。**", ""]
+        L += ["四条预注册结论未全部成立；本文件记录差异，不构成全量实验的正式判定。", ""]
     L += ["| 预注册结论 | 真数据判定 |", "|---|---|"]
     for k, n in names.items():
         L.append(f"| {n} | {'成立' if d.get(k) else '不成立'} |")
@@ -118,7 +118,7 @@ def main():
           "## 6. 在线模板更新消融", "",
           f"- frozen − online 的 ΔIDSW = {r['online_ablation']['mean']}，"
           f"CI95 = [{r['online_ablation']['ci_lo']}, {r['online_ablation']['ci_hi']}]", "",
-          "## 7. 判定规则（跑实验前固定）", "",
+          "## 7. 预注册判定配置", "",
           "```json", json.dumps(r.get("meta", {}), ensure_ascii=False, indent=2)[:1200], "```", "",
           "## 8. 实验设定与局限", "",
           "- 三基准统一使用过滤后 GT 框作为检测输入（oracle-detection / association-only），"

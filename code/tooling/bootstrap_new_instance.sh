@@ -1,20 +1,16 @@
 #!/usr/bin/env bash
-# 新实例资产引导（省本机流量版）
+# 新实例资产引导：在空白实例上部署数据集、代码与权重，供 resume_v4.sh 使用。
 #
-# 解决的问题：resume_v4.sh 的 [0] preflight 假设 datasets/code/weights 已在服务器上，
-# 而「服务器侧直下 15 GB」的脚本此前只存在于被销毁的实例上。
-# 全新空白实例必须先跑本脚本，再跑 resume_v4.sh。
+# 执行顺序：全新实例先运行本脚本，再运行 resume_v4.sh。
 #
 # 用法: bash /d/mot_exp_assets/bootstrap_new_instance.sh [ssh_alias]
-# 前提: ~/.ssh/config 中该别名的 Port 已改为新实例端口。
+# 前提: ~/.ssh/config 中该别名的 Port 指向目标实例。
 #
-# 流量开关（默认即最省流量）：
-#   PUSH_WEIGHTS=0   权重 27 MB 也改由服务器下载（默认 1，本机推 27 MB）
-#   PUSH_WHEELS=1    额外推 152 MB 离线 wheels（默认 0；v4 首选在线清华源）
+# 可选开关：
+#   PUSH_WEIGHTS=0   权重 27 MB 由服务器侧下载（默认 1）
+#   PUSH_WHEELS=1    额外同步 152 MB 离线 wheels（默认 0）
 #   SKIP_DOWNLOAD=1  服务器上已有 15 GB zip 时跳过下载
-#   SKIP_PROXY=1     下载时强制直连 hf-mirror
-#
-# 本机流量账：默认约 27.5 MB 上行；15 GB 数据集由服务器自下，0 本机流量。
+#   SKIP_PROXY=1     下载时强制直连公开镜像
 set -uo pipefail
 
 HOST="${1:-radeon-cloud}"
@@ -85,7 +81,7 @@ test -f /root/mot_exp/code/deep-person-reid/torchreid/models/osnet.py
 echo "CODE_EXPANDED_OK"
 EXPAND
 
-echo "=== [2] 服务器侧直下 15 GB（不经过本机，0 流量）==="
+echo "=== [2] 服务器侧下载 15 GB（公开镜像直连）==="
 if [ "$SKIP_DOWNLOAD" = "1" ]; then
     echo "  SKIP_DOWNLOAD=1，跳过"
 else
@@ -119,7 +115,7 @@ CHK
 
 echo "############################################################"
 echo "# BOOTSTRAP DONE $(date)"
-echo "# 下一步（流量模式，关掉 2~3 GB 特征回拉）："
+echo "# 下一步（精简同步模式，跳过 2~3 GB 特征镜像）："
 echo "#   MOT_SKIP_FEATURE_PULL=1 bash /d/mot_exp_assets/resume_v4.sh $HOST"
-echo "# 若之后换成 WiFi / 不限流量，去掉该变量即可恢复逐步特征备份。"
+echo "# 去掉该变量即可恢复逐步特征镜像。"
 echo "############################################################"

@@ -2,7 +2,7 @@
 # 服务器端执行：从 hf-mirror 直下 15 GB 数据集
 #
 # 目的：15 GB 走服务器自己的公网出口，完全不经过本机，
-#       因此用户使用手机流量时本机流量消耗为 0。
+#       因此无需从本机上传数据。
 # 用法：bash /root/mot_exp/download_datasets.sh
 #   SKIP_PROXY=1  强制不走代理（直连 hf-mirror）
 #   curl -C - 支持断点续传，重复执行会跳过已完整的文件。

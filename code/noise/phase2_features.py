@@ -7,7 +7,7 @@ Geometry-keyed reuse (frozen_config.feature_cache.rule = geometry_keyed_v1):
     (phase1_selftest verifies this), so its feature is reused from that cache.
   * Injected FP crops and all boxes when sigma_loc > 0 are extracted on demand.
   * A deterministic toy backend (CPU, no images, no weights) drives the local
-    dry-run so the full pipeline can be validated without burning GPU/traffic.
+    dry-run so the full pipeline can be validated without GPU compute or large transfers.
 
 The backend is self-contained: no import of full_experiment, so it works both
 locally and on the ROCm instance.

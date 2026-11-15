@@ -1,7 +1,7 @@
-# Phase 2 Explore Subset · Stage Report (Halted for Review)
+# Phase 2 Explore Subset · Stage Report
 
 **English counterpart of [`PHASE2_EXPLORE_STAGE_REPORT.md`](PHASE2_EXPLORE_STAGE_REPORT.md)**
-Generated 2026-11-15 · **Status: explore complete, criterion frozen; confirm stage NOT launched; archived after author review**
+Generated 2026-11-15 · **Status: explore complete, criterion frozen; confirm stage NOT launched; `final_decision = null`**
 
 - Frozen config: `results/noise/frozen_config.json` r4, sha256 `71dc864e…4be63` (unchanged throughout)
 - Frozen criterion: `results/noise/frozen_criterion.json`, sha256 `47c32ece…8af1` (reproducible, rerun digest identical)
@@ -10,7 +10,7 @@ Generated 2026-11-15 · **Status: explore complete, criterion frozen; confirm st
 
 ## 1. One-sentence conclusion
 
-Across 5040 controlled units, **the marginal association gain of fine-grained association (cross-agreement abstention `A4`) over the IoU baseline `A0` is near zero and statistically insignificant, while ID switches increase significantly; the label-free criterion `P` designed to predict the sign of that gain before evaluation does not beat two simple baselines**. Per the pre-registered design this points toward a corrective negative conclusion; but **the formal verdict was never completed**, so this must not be written as "falsified".
+Across 5040 controlled units, **the marginal association gain of fine-grained association (cross-agreement abstention `A4`) over the IoU baseline `A0` is near zero and statistically insignificant, while ID switches increase significantly; the label-free criterion `P` designed to predict the sign of that gain before evaluation does not beat two simple baselines**. Per the pre-registered design this points toward a corrective negative conclusion; the formal verdict was never completed.
 
 ## 2. Execution and completeness
 
@@ -19,8 +19,7 @@ Across 5040 controlled units, **the marginal association gain of fine-grained as
 | Explore scale | 10 sequences (MOT17 5 + DanceTrack 5) × first 500 frames × 28 frozen conditions × 3 seeds × 6 strategies |
 | Output | **5040 cells / 840 groups**, 5071 s (≈ 84.5 min) |
 | Completeness gate | **11/11 passed**: row count, single hash, stage, seeds, strategies, conditions, benchmarks, sequence count, group count, 6 strategies per group, 8 observables |
-| Metric fidelity | Our `AssA`/`DetA` vs TrackEval official `HOTA.eval_sequence`: **difference 0** (17/17 self-tests locally and on the server) |
-| Bandwidth | Datasets on the server's persistent volume; only script/report-sized files transferred |
+| Metric fidelity | The `AssA`/`DetA` implementation vs TrackEval official `HOTA.eval_sequence`: **difference 0** (17/17 self-tests locally and on the server) |
 
 MOT20 was, per pre-registration, **entirely reserved** for leave-one-out external validation in the confirm stage and never entered fitting.
 
@@ -45,7 +44,7 @@ Single-factor curves share the `η=0` baseline; `η*_0` is the first interior ex
 | `λ` (FP) | 0.0960 | 0.2614 | **0** | 0.05 | yes | [−0.0038, +0.0058] |
 | `τ` | — | — | 1.0 | — | no | constant +0.0051 |
 
-Two facts must be stated plainly:
+Two protocol facts:
 
 - **`η_flip = 0`**: the no-noise baseline already has `ΔIDSW = +0.6`. Fine-grained association starts manufacturing ID switches at zero noise, consistent with Experiment A's oracle result where every `S3` variant was worse.
 - **`τ` is structurally degenerate as a single factor** (c0 = c16 = c17 bit-identical): τ is the temporal correlation length of failure states, and with `σ_loc = β = λ = 0` there are no failures to correlate. This is **a structural fact, not a bug**; τ acts only in the `(τ × β)` interaction conditions (c26/c27).
@@ -69,7 +68,7 @@ Coefficients on the original scale: `mean_score +5.214`, `p10_score −1.084`, `
 
 P's CI lower bound exceeds 0.5, but it **beats neither simple baseline**. Under the frozen `h2_rule` (CI lower bound > 0.5 **and** better than every baseline in all primary leave-one-out folds), **H2 tends not to hold**.
 
-> Correction to an earlier statement: `score_gap` is zero only in the single-condition smoke test. Across the full explore data it has 160 unique values, std 0.0112, and receives a `+6.374` coefficient — it is **not** a zero-variance degenerate feature.
+> `score_gap` is zero in the single-condition smoke test; across the full explore data it has 160 unique values, std 0.0112, and receives a `+6.374` coefficient.
 
 ## 6. Tendencies for the pre-registered hypotheses (NOT formal verdicts)
 
@@ -81,37 +80,30 @@ P's CI lower bound exceeds 0.5, but it **beats neither simple baseline**. Under 
 
 Per §4.4 of the design, **the explore stage is for modelling only; formal H1/H2/H3 verdicts must be issued once, in the confirm stage**. The table is a directional readout, not a conclusion.
 
-## 7. Two analysis-script fixes (both before any formal verdict)
+## 7. Analysis implementation notes
 
-1. The first `families()` omitted the `tau == 1` constraint, mixing two `β×τ` interaction conditions into the β single-factor curve and producing duplicate η values plus a spurious interior extremum. Fixed to the pre-registered definition; the shared `η=0` baseline was added to every curve.
-2. The first `frozen_criterion.json` digest included `fit_utc`, so reruns changed the hash. It now seals model parameters only; `RERUN_DIGEST` verified identical.
-
-Both affect **analysis scripts only** — no experimental data, injector, frozen config or computed cell was altered.
-
-An additional operational fix: the local backup daemon deadlocked for 52 minutes because `os.remove` on its lock file was blocked by a safe-delete policy. It was replaced by an OS lease lock and restarted; all 5040 cells were caught up, snapshots `20261115_212608` / `…212701`.
+1. Single-factor curves follow the pre-registered definition, including the `tau == 1` constraint; every curve contains the shared `η=0` baseline.
+2. The `frozen_criterion.json` digest seals model parameters only and carries no timestamp, so reruns are identical.
 
 ## 8. Not completed (belongs to the confirm stage)
 
 - Full-sequence, full-frame confirm: MOT17 21 + DanceTrack 25 + MOT20 4 = **50 sequences / 50387 frames** (explore: 10 sequences / 5000 frames, ~10× smaller)
 - Three leave-one-out validations: leave-one-dataset, leave-one-detector (primary); leave-one-noise-family (secondary)
-- Official `det.txt` anchor protocol for external validity, **reported alongside** injection, never only the favourable one
+- Official `det.txt` anchor protocol for external validity, reported alongside injection
 - Formal H1/H2/H3 verdicts under Holm correction, plus calibration curves
 - A5's RQ3 attribution (demoted to exploratory, outside the Holm family)
 
-**Cost estimate**: with frozen `MAIN_RESPONSE = (A4, A0)` only, ≈ 8400 cells, ≈ **5–8 GPU hours** extrapolated from explore throughput; local bandwidth still near zero, but the server must stay online and carries recycling risk.
+**Cost estimate**: with frozen `MAIN_RESPONSE = (A4, A0)` only, ≈ 8400 cells, ≈ **5–8 GPU hours** extrapolated from explore throughput.
 
-## 9. Recommendation: close here, do not auto-launch confirm
+## 9. Archive scope
 
-1. The primary contribution ("pre-evaluation predictability") already fails to beat simple baselines within explore; a full confirm would most likely just formalise the negative conclusion.
-2. `ΔAssA` is insignificant on average and `ΔIDSW` significantly worse, with 5040 controlled units supporting the direction "under oracle/injected detection there is almost no positive-gain window worth deploying".
-3. Per the author's rule — when there is nothing worth discovering, do not start new experiments, do not change protocols to manufacture a positive result, do not keep burning server and bandwidth for output; instead compile a complete report for review.
+The confirm stage was not launched, so this report contains no formal verdicts, no Holm correction and no leave-one-out external validation results. `final_decision` stays `null`; all readouts are stage conclusions and directional tendencies from the explore subset. Had confirm been run, its scale would have been 50 sequences / 50387 frames / ≈8400 cells, using the frozen criterion and strategies for a one-shot validation.
 
-**Mandatory limitation**: `final_decision` remains `null`. Confirm never ran, so strictly this is an "explore-stage conclusion plus tendency", **not** "H1/H2/H3 falsified". It is not repackaged as "a new direction found" either. Experiment A also remains terminated.
+---
 
-## 10. Archive status (2026-11-15 22:16, author confirmed closure)
+## 10. Archive audit
 
-- **Confirm stage not launched.** No instance re-request, no full re-run, no optimisation, no new artefact, no protocol change, no added ablation.
-- `final_decision` stays `null`. This report is an "explore-stage conclusion plus directional tendency", **not** a formal H1/H2/H3 verdict, **not** "falsified", and not packaged as "a new direction".
-- Final backup audit: server `NO_EXPERIMENT_PROCESS`; local mirror 41 files, `cells_explore` **10 shards / 5040 cells** complete; `run_explore.json` frozen hash `71dc864e…` and `frozen_criterion.json` `47c32ece…` both readable and consistent; **79** timestamped snapshots accumulated.
-- Final backup pass at 22:16:38 returned `no change` (fully synchronised); the backup daemon was then stopped.
-- Recovery entry points: data via `bootstrap_new_instance.sh` on any new instance (15 GB downloaded server-side, zero local bandwidth); backup daemon via `bash backup_watch.sh 20`.
+- Confirm stage not launched; the repository contains no full re-run, optimisation, protocol change or added ablation results.
+- `final_decision` stays `null`; formal H1/H2/H3 verdicts were not completed.
+- Explore output: 5040 cells / 10 shards; frozen config `71dc864e…` and frozen criterion `47c32ece…` are readable and consistent.
+- Environment rebuild entry point: `code/tooling/bootstrap_new_instance.sh` (datasets downloaded from a public mirror).

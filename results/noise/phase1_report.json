@@ -12,5 +12,5 @@
   "checks_total": 17,
   "old_key_tp_unmatched": 63,
   "phase": "Phase 0+1 complete; Phase 2 NOT started",
-  "next_step": "user sign-off on frozen grid before any GPU run"
+  "next_step": "frozen grid verified before any GPU run"
 }

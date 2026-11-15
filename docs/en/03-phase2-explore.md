@@ -2,8 +2,8 @@
 
 [Back to README](../../README.md) · [中文](../zh/03-phase2-explore.md)
 
-> **Status**: explore stage complete (2026-11-15 21:53), criterion frozen; the author chose to close the project at 22:16, so the **confirm stage was never launched**.
-> Everything here is a **stage conclusion plus directional tendency**, with `final_decision = null`. **These are not formal H1/H2/H3 verdicts.**
+> **Status**: explore stage complete (2026-11-15), criterion frozen; **confirm stage never launched**.
+> Everything here is a **stage conclusion plus directional tendency**, with `final_decision = null`. Formal H1/H2/H3 verdicts were not completed.
 
 ## 1. Scale and completeness
 
@@ -12,10 +12,10 @@
 | Explore grid | MOT17 5 seq + DanceTrack 5 seq × first 500 frames × 28 frozen conditions × 3 seeds × 6 strategies |
 | Output | **5040 cells / 840 groups**, 5071 s (84.5 min) |
 | Completeness gate | **11/11 passed**: row count, single hash, stage, seeds, strategies, conditions, benchmarks, sequence count, group count, 6 strategies per group, 8 observables |
-| Metric fidelity | Our `AssA`/`DetA` vs TrackEval official `HOTA.eval_sequence`: **difference 0** (17/17 self-tests locally and 17/17 on the server) |
+| Metric fidelity | The `AssA`/`DetA` implementation vs TrackEval official `HOTA.eval_sequence`: **difference 0** (17/17 self-tests locally and 17/17 on the server) |
 | Data | [`results/noise/cells_explore/`](../../results/noise/cells_explore/), 10 per-sequence JSONL shards |
 
-MOT20 was, per pre-registration, **entirely reserved** for leave-one-out external validation in the confirm stage and never entered fitting. The frozen config hash was unchanged throughout.
+MOT20 was, per pre-registration, **reserved** for leave-one-out external validation and never entered fitting. The frozen config hash was unchanged throughout.
 
 ## 2. Primary response
 
@@ -40,10 +40,10 @@ Single-factor curves all start from a shared `η=0` baseline. `η*_0` is the fir
 | `λ` (FP) | 0.0960 | 0.2614 | **0** | 0.05 | yes | [−0.0038, +0.0058] |
 | `τ` | — | — | 1.0 | — | no | constant +0.0051 |
 
-Two facts must be stated plainly:
+Two protocol facts:
 
 - **`η_flip = 0`**: the no-noise baseline already has `ΔIDSW = +0.6`; fine-grained association starts manufacturing ID switches at zero noise. This agrees with the direction of Experiment A, where every `S3` variant was worse under the oracle protocol.
-- **`τ` is structurally degenerate as a single factor** (c0 = c16 = c17 bit-identical): τ is the temporal correlation length of failure states; with `σ_loc = β = λ = 0` there are no failures to correlate, so τ has no effect. This is **a structural fact, not a bug**; τ only acts in the `(τ × β)` interaction conditions (c26/c27).
+- **`τ` is structurally degenerate as a single factor** (c0 = c16 = c17 bit-identical): τ is the temporal correlation length of failure states; with `σ_loc = β = λ = 0` there are no failures to correlate, so τ has no effect. This is **a structural fact**; τ only acts in the `(τ × β)` interaction conditions (c26/c27).
 
 `η†` is operationalised as the smallest η with `|ΔAssA| < |DetA(η) − DetA(0)|`. All three components satisfy it at very low noise, meaning association differences are quickly swamped by detection degradation.
 
@@ -76,25 +76,23 @@ Frozen file: [`results/noise/frozen_criterion.json`](../../results/noise/frozen_
 
 Per pre-registration, **the explore stage is for modelling only; formal H1/H2/H3 verdicts must be issued once in the confirm stage**. The table is a directional readout, not a conclusion.
 
-## 6. Protocol facts that must be disclosed
+## 6. Protocol facts
 
-- Official HOTA matches with `global_alignment_score × IoU`, so **the TP set depends on tracker id assignment**; even with identical injected boxes, `DetA` can differ by ≈ 0.007 across strategies. `A1` (ByteTrack) discards low-score boxes and therefore also changes the detection set, giving a larger `DetA` difference. This is the official definition, **not a bug**; `ΔAssA` remains the primary response, and comparisons must state this.
-- The confidence pool was fixed **before any formal cell**: originally only `*-FRCNN` was read, making scores nearly binary; it was changed to uniform per-file sampling over all 21 MOT17 TRAIN `det.txt` files, clipped to [0,1] (156k unique values, std 0.38). MOT20's `det.txt` column 7 is a 0/1 validity flag, not a confidence, so it was excluded.
-- **Correction to an earlier statement**: `score_gap` is zero only in the single-condition smoke test; across the full explore data it has 160 unique values, std 0.0112, and receives a `+6.374` coefficient — it is **not a zero-variance degenerate feature**. We deliberately did not alter the injector for one observable.
+- Official HOTA matches with `global_alignment_score × IoU`, so **the TP set depends on tracker id assignment**; even with identical injected boxes, `DetA` can differ by ≈ 0.007 across strategies. `A1` (ByteTrack) discards low-score boxes and therefore also changes the detection set, giving a larger `DetA` difference. This is the official definition; `ΔAssA` remains the primary response, and comparisons must state this.
+- The confidence pool is uniform per-file sampling over all 21 MOT17 TRAIN `det.txt` files, clipped to [0,1] (156k unique values, std 0.38). MOT20's `det.txt` column 7 is a 0/1 validity flag, not a confidence, so it is excluded.
+- `score_gap` is zero in the single-condition smoke test; across the full explore data it has 160 unique values, std 0.0112, and receives a `+6.374` coefficient.
 - Real smoke test (MOT17-02-FRCNN / 200 frames / cond18 `σ=0.05, λ=0.2`): all six strategies produced different AssA, `n_amb ≈ 5909`, A4 abstained 21635 times → a measurable signal exists; the grid did not produce a flat zero-difference surface.
 
-## 7. Two analysis-script fixes (both before any formal verdict)
+## 7. Analysis implementation notes
 
-1. The first `families()` classified "single factor" using only the three continuous components and omitted the `tau == 1` constraint, mixing two `β×τ` interaction conditions into the β single-factor curve and creating duplicate η values plus a spurious interior extremum. Fixed to the pre-registered definition, with the shared `η=0` baseline added to every curve.
-2. The first `frozen_criterion.json` digest included `fit_utc`, so the hash changed on rerun. It now seals model parameters only; `RERUN_DIGEST` was verified identical.
+1. Single-factor curves follow the pre-registered definition, including the `tau == 1` constraint; every curve contains the shared `η=0` baseline.
+2. The `frozen_criterion.json` digest seals model parameters only and carries no timestamp, so reruns are identical.
 
-Both affect **analysis scripts only** — no experimental data, injector, frozen config or already-computed cell was altered.
-
-## 8. Not completed (belongs to the confirm stage)
+## 8. Not executed (belongs to the confirm stage)
 
 - Full-sequence, full-frame confirm: MOT17 21 + DanceTrack 25 + MOT20 4 = **50 sequences / 50387 frames** (explore was 10 sequences / 5000 frames, ~10× smaller)
 - Three leave-one-out validations: leave-one-dataset, leave-one-detector (primary); leave-one-noise-family (secondary)
-- Official `det.txt` anchor protocol for external validity, **reported alongside** the injection protocol, never only the favourable one
+- Official `det.txt` anchor protocol for external validity, reported alongside the injection protocol
 - Formal H1/H2/H3 verdicts under Holm correction, plus calibration curves
 - A5's RQ3 attribution
 

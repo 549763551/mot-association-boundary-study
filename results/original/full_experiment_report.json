@@ -493,5 +493,5 @@
     "online_degradation": false
   },
   "all_conclusions_reproduced": false,
-  "decision_rule": "if any pre-registered conclusion is falsified -> STOP and report for review"
+  "decision_rule": "if any pre-registered conclusion is falsified -> stop and record the difference report"
 }

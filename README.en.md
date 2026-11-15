@@ -1,37 +1,31 @@
 # Where Fine-Grained Association Stops Paying Off: An Archive of Two Experiments
 
-**[中文版](README.md)** · Archived 2026-11-15 · Status: **closed, no further work planned**
+**[中文版](README.md)** · Archived 2026-11-15 · Status: **static archive; experiments terminated**
 
-> **Read this first.**
-> This repository is a **terminated / stage-level archive of two real-benchmark experiments**,
-> not a paper claiming a positive gain.
-> `final_decision` is `null` for **both** experiments:
-> - Experiment A was halted after repeated remote-instance disconnections; the full evaluation never completed.
-> - Experiment B completed its pre-registered *explore* stage; after reviewing it, the author chose to close the project. The *confirm* stage was never launched.
->
-> Everything here is therefore a **stage conclusion plus directional tendency**.
-> It is **not** "the hypothesis was falsified", and it is **not** a claim of a new direction
-> or a new method that improves tracking accuracy.
+> **Status**
+> This repository archives two real-benchmark experiments. Experiment A was terminated before full evaluation completed; Experiment B was archived after its pre-registered *explore* stage, with the *confirm* stage never launched.
+> `final_decision` is `null` for **both** experiments: the pre-registered formal verdict procedures were not completed.
+> The repository reports completed measurements, stage-level conclusions and reproduction material only.
 
 ---
 
 ## The question
 
-A recurring implicit assumption in the MOT literature is that when detector output is ambiguous, adding more sophisticated appearance association (ReID, relative-difference scoring, agreement-based gating) yields a meaningful gain. We ran two controlled experiments to measure the **boundary of that assumption**. The answer:
+A recurring implicit assumption in the MOT literature is that when detector output is ambiguous, adding more sophisticated appearance association (ReID, relative-difference scoring, agreement-based gating) yields a meaningful gain. Two controlled experiments measure the **boundary of that assumption**. The result:
 
-**Under both `oracle-detection / association-only` and controlled injected detection noise, the marginal association gain of fine-grained association over an IoU baseline is near zero and statistically insignificant, while ID switches increase significantly. Moreover, the proposed main contribution — predicting the *sign* of that gain before evaluation — does not beat simple baselines.**
+**Under both `oracle-detection / association-only` and controlled injected detection noise, the marginal association gain of fine-grained association over an IoU baseline is near zero and statistically insignificant, while ID switches increase significantly. Moreover, the primary research question — predicting the *sign* of that gain before evaluation — does not beat simple baselines.**
 
-This is not a failed execution. Pre-registration, a frozen grid and hash sealing are precisely what make the negative result credible, reproducible and citable.
+Pre-registration, a frozen grid and hash sealing make the results reproducible and independently checkable.
 
 ## The two experiments
 
 | | Experiment A · Confusion-gated pairwise-difference arbitration | Experiment B · Detection-noise gradient / association-gain boundary |
 |---|---|---|
-| Origin | Synthetic study: sparse difference signals let relative discrimination cross the separability threshold ~`√D` earlier than global discrimination | After systematic prior-art search, mechanism novelty was exhausted; contribution reframed as methodology |
+| Origin | Synthetic study: sparse difference signals let relative discrimination cross the separability threshold ~`√D` earlier than global discrimination | After a systematic prior-art search, the study targets methodological boundaries and predictability |
 | Protocol | DanceTrack / MOT17 / MOT20, unified `oracle-detection`, GT boxes filtered per TrackEval | Orthogonally calibrated `Θ=(σ_loc, β, λ, τ)`; response `ΔAssA = AssA(s) − AssA(SORT-IoU)` |
 | Strategies | `S0_motion`, `S1_global`, `S2_countgated`, six `S3_*` variants | Six `A0`–`A5` associators, incl. cross-agreement abstention `A4` |
 | Scale | Target 36 sequences; completed DanceTrack 25/25 and MOT17 7/7 feature extraction | Explore: 5040 cells / 840 groups / 84.5 min, 10 sequences × 500 frames |
-| Outcome | Three instance disconnections; v3 stopped before `MOT20-04`; author halted the experiment | Explore complete, criterion frozen; author closed the project, confirm stage not launched |
+| Archive status | Terminated after feature extraction; full evaluation and formal verdict not completed | Explore complete, criterion frozen; confirm stage not launched |
 | Verdict | `final_decision = null` | `final_decision = null` |
 
 ## Key numbers
@@ -48,16 +42,16 @@ This is not a failed execution. Pre-registration, a frozen grid and hash sealing
 - `η_flip = 0`: at zero noise `ΔIDSW` is already +0.6 — fine-grained association starts manufacturing ID switches from the clean regime.
 - Criterion `P` (≤8 label-free features, L2 logistic regression, [frozen](results/noise/frozen_criterion.json), sha256 `47c32ece…8af1`): leave-one-sequence-out sign accuracy **0.5512** [0.5190, 0.5857], **below** the confidence-only baseline 0.6071 and the β/λ baseline 0.6048 → by the frozen `h2_rule`, **H2 tends not to hold**.
 
-**Evaluation metric verified**: our `AssA` / `DetA` implementation matches TrackEval's official `HOTA.eval_sequence` with **difference 0** (17/17 self-tests locally and 17/17 on the server).
+**Evaluation metric verified**: the `AssA` / `DetA` implementation matches TrackEval's official `HOTA.eval_sequence` with **difference 0** (17/17 self-tests locally and 17/17 on the server).
 
 ## What is actually usable
 
 See [Practical takeaways](docs/en/04-practical-takeaways.md) · [可落地结论（中）](docs/zh/04-practical-takeaways.md). In brief:
 
-- **Where to invest**: inverting `Θ̂` from 25 official `det.txt` files shows real detectors have a median box jitter of only **0.020** (2% of target height), but a median miss rate of **0.432** and median consecutive-miss run length of **~10 frames**. The dominant noise is **temporally correlated misses**, not box localisation error. Invest in temporal recovery and track keep-alive under occlusion, not in tighter box alignment or finer appearance scoring.
+- **Where to invest**: inverting `Θ̂` from 25 official `det.txt` files shows real detectors have a median box jitter of only **0.020** (2% of target height), but a median miss rate of **0.432** and median consecutive-miss run length of **~10 frames**. The dominant noise is **temporally correlated misses**, not box localisation error. Resources are better spent on temporal recovery and track keep-alive under occlusion than on tighter box alignment or finer appearance scoring.
 - **Save compute**: `geometry_keyed_v1` — only `σ_loc` changes box geometry; under β/λ/τ the surviving TP boxes are bit-identical to GT, so only **9 of 28** conditions need feature re-extraction.
-- **Do not mis-evaluate**: official HOTA matches with `global_alignment×IoU`, so the TP set depends on tracker id assignment; `A1` discards low-score boxes, making `DetA` incomparable; after perturbation, identity must not be mapped back via box coordinates (the old scheme silently dropped 63 true-target rows) — carry a `src_gid` side channel instead.
-- **What not to deploy**: "ambiguity equals confidence" does not hold here; do not ship a ReID gate driven by top-1/top-2 margins. This is a **negative** guideline and offers no replacement.
+- **Evaluation implementation rules**: official HOTA matches with `global_alignment×IoU`, so the TP set depends on tracker id assignment; `A1` discards low-score boxes, making `DetA` incomparable; after perturbation, identity should be mapped through a `src_gid` side channel rather than box-coordinate keys.
+- **Negative guideline**: "ambiguity equals confidence" does not hold here; top-1/top-2 margins should not be used as a ReID gate. No replacement is offered.
 - **Not engineering thresholds**: `η*_0` / `η†` / `η_flip` are descriptive readouts from an explore subset — small effects, wide CIs, no leave-one-out external validation, no Holm correction.
 
 ## Documentation
@@ -87,19 +81,19 @@ background/                     synthetic E1-E4 (motivation only, NOT a third ex
 SHA256SUMS.txt                  sha256 of every published file
 ```
 
-**Not included**: the 15 GB datasets, OSNet weights, extracted `.npy` features, private keys or server credentials. Datasets are downloaded directly on the server from a public mirror — see [Reproduction](docs/en/05-reproduction-and-archive.md).
+**Not included**: the 15 GB datasets, OSNet weights, extracted `.npy` features, private keys or server credentials. Datasets are downloaded directly from a public mirror — see [Reproduction](docs/en/05-reproduction-and-archive.md).
 
 ## Integrity
 
 - Frozen config [`results/noise/frozen_config.json`](results/noise/frozen_config.json) r4, `integrity.digest = 71dc864e…4be63`, matching the per-row `frozen_sha256` embedded in all 5040 cells. **Never modified.**
 - Frozen criterion [`results/noise/frozen_criterion.json`](results/noise/frozen_criterion.json) digest is reproducible by rerunning the analysis.
 - Explore completeness gate **11/11 passed** (row count, single hash, stage, seeds, strategies, conditions, benchmarks, sequence count, group count, 6 strategies per group, 8 observables).
-- Cross-source check: the original local `MOT17.zip` and the server-side hf-mirror repack produced **field-by-field identical `Θ̂`** across 25 sequences.
+- Cross-source check: the original MOT17 archive and a public-mirror repack produced **field-by-field identical `Θ̂`** across 25 sequences.
 - Per-file sha256 in [`SHA256SUMS.txt`](SHA256SUMS.txt).
 
-## Explicitly not done
+## Not included in this archive
 
-By the author's decision, there is **no** further instance request, no full re-run, no optimisation, no new artefact, no change of protocol, no added ablation. The confirm stage (50 sequences / 50387 frames / ~8400 cells / estimated 5–8 GPU hours) was never launched. Consequently the following do not exist: formal H1/H2/H3 verdicts, Holm correction, three leave-one-out validations, the official-`det.txt` anchor protocol reported alongside injection, and A5's RQ3 attribution.
+The confirm stage (50 sequences / 50387 frames / ~8400 cells / estimated 5–8 GPU hours) was never launched. Consequently the archive contains no formal H1/H2/H3 verdicts, no Holm correction, no three leave-one-out validations, no official-`det.txt` anchor protocol reported alongside injection, and no A5 RQ3 attribution.
 
 ## Licence and citation
 

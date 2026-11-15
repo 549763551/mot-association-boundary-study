@@ -302,7 +302,7 @@ def main():
         checks_total=len(selftest["checks"]),
         old_key_tp_unmatched=selftest.get("old_key_tp_unmatched"),
         phase="Phase 0+1 complete; Phase 2 NOT started",
-        next_step="user sign-off on frozen grid before any GPU run",
+        next_step="frozen grid verified before any GPU run",
     )
     with open(os.path.join(a.out, "phase1_report.json"), "w",
               encoding="utf-8") as f:

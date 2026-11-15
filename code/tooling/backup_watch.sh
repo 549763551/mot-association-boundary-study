@@ -2,8 +2,7 @@
 # 持续增量备份守护：每 20 秒做一次「一步一备份」，直到最终报告落盘。
 # 与服务器上正在跑的 run_phase2.py 完全独立，不改动、不干扰它。
 # 用法: bash /d/mot_exp_assets/backup_watch.sh
-# 2026-11-15: END_MARK 从原实验的 difference_report.md 改为噪声实验的
-# final_report.md；锁已改为 OS 租约（不再删除 .backup.lock），避免死锁。
+# END_MARK 指向噪声实验的 final_report.md；并发控制使用 OS 租约锁。
 set -uo pipefail
 SCRIPT="/path/to/mot_exp_assets/backup_experiment.py"
 BASE="/path/to/mot_exp_backup"
