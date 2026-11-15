@@ -1,0 +1,27 @@
+{
+  "source": "pedestrian_vtest.avi（795 帧，768x576，YOLO11n 检测 + 已有追踪结果）",
+  "note": "无人工 ID 标注，仅测量触发率与调用量，不给出 IDF1/IDSW 精度结论",
+  "frames": 795,
+  "tracks": 56,
+  "total_detections": 4596,
+  "template_init_calls": 416,
+  "measured_descriptor_ms_per_call": 0.2263,
+  "measured_descriptor_total_ms": 94.1,
+  "frames_with_risk": 188,
+  "frames_with_risk_ratio": 0.2365,
+  "risk_single_candidate": 419,
+  "risk_multi_candidate": 14,
+  "plain_single_candidate": 4122,
+  "plain_multi_candidate": 41,
+  "estimatedVerifications": {
+    "global": 4596,
+    "candcount": 55,
+    "confusion": 433
+  },
+  "estimatedVerificationRatio": {
+    "global": 1.0,
+    "candcount": 0.012,
+    "confusion": 0.0942
+  },
+  "elapsed_s": 2.0
+}

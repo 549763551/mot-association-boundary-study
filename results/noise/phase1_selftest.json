@@ -1,0 +1,109 @@
+{
+  "quality_gate": "IDSW_QUALITY_GATE_OK",
+  "passed": true,
+  "checks": [
+    {
+      "name": "identity_boxes",
+      "passed": true,
+      "detail": "Theta=0 reproduces GT boxes exactly"
+    },
+    {
+      "name": "identity_ids",
+      "passed": true,
+      "detail": "Theta=0 reproduces GT identities exactly"
+    },
+    {
+      "name": "identity_no_fp_fn",
+      "passed": true,
+      "detail": "n_fp=0 n_fn=0"
+    },
+    {
+      "name": "determinism",
+      "passed": true,
+      "detail": "same seed -> byte-identical detections"
+    },
+    {
+      "name": "seed_sensitivity",
+      "passed": true,
+      "detail": "different seed -> different detections"
+    },
+    {
+      "name": "beta_monotone",
+      "passed": true,
+      "detail": "[0.0, 0.106, 0.304, 0.615]"
+    },
+    {
+      "name": "lambda_monotone",
+      "passed": true,
+      "detail": "[0.0, 0.09, 0.317, 0.592]"
+    },
+    {
+      "name": "beta_calibrated",
+      "passed": true,
+      "detail": "observed FN rate 0.304 vs nominal 0.300"
+    },
+    {
+      "name": "lambda_calibrated",
+      "passed": true,
+      "detail": "observed FP rate 0.317 vs nominal 0.300"
+    },
+    {
+      "name": "beta_lambda_tau_reuse_gt_features",
+      "passed": true,
+      "detail": "surviving TP boxes are bit-identical to GT => cached features reusable"
+    },
+    {
+      "name": "sigma_loc_forces_reextraction",
+      "passed": true,
+      "detail": "sigma_loc>0 moves boxes => re-extraction genuinely required"
+    },
+    {
+      "name": "scale_normalized",
+      "passed": true,
+      "detail": "same sigma_loc, |dx| small=19.167 large=38.335 (should scale with h)"
+    },
+    {
+      "name": "oracle_old_key_valid",
+      "passed": true,
+      "detail": "no injection: old box-key mapping gives 0 switches, 0 unmatched"
+    },
+    {
+      "name": "src_gid_perfect_tracker_zero_idsw",
+      "passed": true,
+      "detail": "perfect tracker under injection -> 0 IDSW"
+    },
+    {
+      "name": "old_key_breaks_under_injection",
+      "passed": true,
+      "detail": "old box-key mapping fails on 63 TRUE-POSITIVE rows (must be > 0); total unmatched=72, old-method IDSW=0"
+    },
+    {
+      "name": "idsw_detects_injected_switches",
+      "passed": true,
+      "detail": "2 deliberately swapped identities -> 2 IDSW"
+    },
+    {
+      "name": "idsw_detects_switches_under_injection",
+      "passed": true,
+      "detail": "same swap under injection -> 2 IDSW"
+    }
+  ],
+  "old_key_tp_unmatched": 63,
+  "injected_stats": {
+    "n_frames": 24,
+    "n_gt": 69,
+    "n_tp": 63,
+    "n_fp": 9,
+    "n_fn": 6,
+    "observed_fn_rate": 0.08695652173913043,
+    "observed_fp_rate": 0.13043478260869565,
+    "theta": {
+      "sigma_loc": 0.05,
+      "beta": 0.1,
+      "lambd": 0.1,
+      "tau": 3
+    },
+    "seed": 12345
+  },
+  "note": "src_gid is a side channel; trackers never see GT identities at run time"
+}

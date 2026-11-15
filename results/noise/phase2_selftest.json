@@ -1,0 +1,95 @@
+{
+  "status": "PHASE2_SELFTEST_OK",
+  "passed": true,
+  "checks": [
+    {
+      "name": "frozen hash seal",
+      "passed": true,
+      "detail": "71dc864eb6718fac"
+    },
+    {
+      "name": "condition enumeration",
+      "passed": true,
+      "detail": "n=28"
+    },
+    {
+      "name": "geometry-keyed reextract count",
+      "passed": true,
+      "detail": "9 of 28 conditions need re-extraction"
+    },
+    {
+      "name": "Theta=0 reproduces GT boxes",
+      "passed": true,
+      "detail": "n_gt=180 n_tp=180"
+    },
+    {
+      "name": "Theta=0 has no FP/FN",
+      "passed": true,
+      "detail": "fp=0 fn=0"
+    },
+    {
+      "name": "same seed -> identical detections",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "injection changes the detection set",
+      "passed": true,
+      "detail": "gt=180 tp=170 fp=33 fn=10"
+    },
+    {
+      "name": "sigma_loc forces re-extraction",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "feature matrix shape",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "observables are <=8 label-free dims",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "all 6 strategies run + metrics in range",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "DetA identical for same-det-set strategies",
+      "passed": true,
+      "detail": "A0/A2/A3/A4/A5 spread=0.00e+00 (A1 excluded by design)"
+    },
+    {
+      "name": "A1 low-score filtering is active",
+      "passed": true,
+      "detail": "A1=179 A0=203"
+    },
+    {
+      "name": "main response computable",
+      "passed": true,
+      "detail": "dAssA(A4-A0)=+0.0000"
+    },
+    {
+      "name": "src_gid IDSW is a non-negative integer",
+      "passed": true,
+      "detail": "IDSW=2"
+    },
+    {
+      "name": "TrackEval AssA cross-check",
+      "passed": true,
+      "detail": "mine=0.72268720 official=0.72268720 diff=0.00e+00"
+    },
+    {
+      "name": "TrackEval DetA cross-check",
+      "passed": true,
+      "detail": "mine=0.58911810 official=0.58911810 diff=0.00e+00"
+    }
+  ],
+  "n_checks": 17,
+  "n_passed": 17,
+  "official_assa": 0.7226872046660746,
+  "mine_assa": 0.7226872046660746
+}

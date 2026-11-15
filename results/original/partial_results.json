@@ -1,0 +1,129 @@
+{
+  "status": "SECOND_INSTANCE_OUTAGE__V4_CHECKPOINTS_READY",
+  "timestamp": "2026-11-15T18:45:00+08:00",
+  "final_decision": null,
+  "server_state": "第二个实例（端口 <PORT>, <INSTANCE_ID>）在 v3 全量实验的 MOT20 特征抽取阶段再次被远端断开：MOT20-03 已完成 313658 框，进入 MOT20-04 前 Connection closed by remote host，V3_SCRIPT_EXIT=1。三轮复检 <PORT>/<PORT>/<PORT> 均为 Timeout/ConnectionRefused 交替。此前 DanceTrack 25/25、MOT17 7/7 特征已完成。因 v3 把 .npy 排除在镜像外，本机只留有 32 个小文件与 46 行路径清单，35 个特征 .npy 及任何结论 JSON 均不在本机；四条预注册结论仍未完成全量判定，final_decision 保持 null。三基准原始数据、权重、源码、离线 wheels、全部实验代码在本机 <ASSETS_DIR> 完整保留，可 100% 重建，无需重新下载。",
+  "backup_status": {
+    "complete_on_local": [
+      "<ASSETS_DIR>/datasets/ 三个基准 zip 共约 15 GB（含 MOT17/MOT20 labels）",
+      "<ASSETS_DIR>/weights/ 两个 OSNet 权重",
+      "<ASSETS_DIR>/code/ TrackEval 与 deep-person-reid 源码 + tarball",
+      "<ASSETS_DIR>/wheels/ 28 个 Linux cp312 离线 wheels",
+      "<ASSETS_DIR>/MANIFEST.md, server_setup.sh, resume_full_experiment.sh",
+      "confusion-gated-reid/full_experiment/*.py 全部 13 个实验脚本",
+      "confusion-gated-reid/results/experiment.json 合成实验原始基线",
+      "<LOCAL_DATA_DIR>/ 5 个完整 DanceTrack 序列解压版 (1064 MB)",
+      "<DRYRUN_DIR>/ 5 序列 x 250 帧子集 + 真实 OSNet 特征 + 全链路产物"
+    ],
+    "lost_with_server": [
+      "34/36 个全量特征 .npy（三基准）",
+      "run_stats.json 全量 54 keys（DanceTrack + MOT17）",
+      "服务器 logs/ 与 venv",
+      "服务器上未完成的 TrackEval 评估输出"
+    ],
+    "lesson": "三次事故逐层修正：v2 把结果回拉放在脚本最后，脚本从未跑完导致零同步 -> 改为阶段化即时回拉 + 中断 trap；v3 有逐步回拉但把 >2MB 的 .npy 排除在镜像外，只留路径清单，第三次断连仍丢全部特征 -> v4 用 pull_features.py 单独增量镜像特征，并改为逐序列抽取+每序列立即回拉。教训：最耗时且不可从轻量数据重算的产物必须优先备份，不能用『可重算』作为排除理由。"
+  },
+  "local_validation": {
+    "purpose": "服务器等待期间在本机 CPU 上做完整管线端到端预演；用于暴露实现错误，不是最终实验，不触发用户设定的结果分支。",
+    "subset": "DanceTrack val 5 序列 x 前 250 帧，8136 个真实 GT 框，真实图像，真实 OSNet-x1_0(MSMT17) FP32 特征",
+    "hardware": "本机 12 核 CPU / torch 2.15.0+cpu / cuda_available=False",
+    "throughput": "OSNet 约 8 crops/s；全量三基准约 1.35M 框在本机需约 47 小时，不现实",
+    "stages_all_passed": [
+      "extract_features: 5/5 序列, 17m59s, EXTRACT_ALL_DONE",
+      "track: 27 配置 x 5 序列, TRACK_DONE 7.1s",
+      "eval: TrackEval 官方 HOTA/CLEAR/Identity, 27 trackers 全部完成, NumPy 2.5 / pandas 3.1 兼容通过",
+      "analyze: 分带 + bootstrap 1000x + 四条预注册判定, 图表与 markdown",
+      "make_diff_report: difference_report.md 生成"
+    ],
+    "outputs": "<DRYRUN_DIR>/results/{run_stats.json,trackeval_results.json,full_experiment_report.json,full_experiment_summary.md,full_experiment_figures.png,difference_report.md}",
+    "official_metrics_highlights": {
+      "S0_motion": {"HOTA": 0.9255, "IDF1": 0.9312, "IDSW": 15},
+      "S1_global": {"HOTA": 0.9144, "IDF1": 0.9176, "IDSW": 18},
+      "S3_hist_auc": {"HOTA": 0.9145, "IDF1": 0.9054, "IDSW": 19},
+      "S3_frame_calib": {"HOTA": 0.8986, "IDF1": 0.8996, "IDSW": 21},
+      "S3_saturated": {"HOTA": 0.9165, "IDF1": 0.9152, "IDSW": 17},
+      "alpha_05_pure_appearance": {"HOTA": 0.6032, "IDF1": 0.6041, "IDSW": 916}
+    },
+    "decisions_on_subset": {
+      "inverted_u": false,
+      "critical_notch": false,
+      "cost_overrun": true,
+      "online_degradation": false,
+      "all_conclusions_reproduced": false
+    },
+    "caveat": "子集仅 5 序列 x 250 帧，基线错误预算仅 15 次 IDSW，bootstrap CI 极宽；此判定仅供管线验证与方向预警，绝不能替代三基准全量判定，也据此不做优化/新产物。"
+  },
+  "bug_found_and_fixed": {
+    "file": "analyze.py",
+    "symbol": "idsw_per_frame",
+    "bug": "原实现用 prev = cur，即只与『上一帧』比较；GT 身份因遮挡/漏检缺席若干帧后，重现时的 ID 切换被静默漏计。",
+    "evidence": "修正前自实现 S0 总 IDSW = 3，TrackEval 官方 = 15；修正后 = 15，差值 0。GT 框回映射 0/219672 失配。",
+    "fix": "改为 prev.update(cur)，按每个 GT 身份『最后一次出现』的 track id 比较。",
+    "additional_hardening": [
+      "collect() 统计并打印 unmatched 比例，>1% 时告警",
+      "analyze_all() 加入 idsw_consistency 质量门：自实现 IDSW 与官方 IDSW 交叉校验",
+      "full_experiment_report.json 与 summary.md 均输出该校验"
+    ],
+    "decision_impact": "四条判定在修正前后一致（3 不成立 / 1 成立），但分带 ΔIDSW 数值已变化，全量实验必须使用修正后的代码。"
+  },
+  "cross_platform_changes": {
+    "note": "所有改动向后兼容：不设环境变量时服务器行为完全不变。",
+    "files": {
+      "exp_config.py": "MOT_EXP_ROOT / MOT_BENCHMARKS / MOT_EXTRACT_BATCH / MOT_EXTRACT_WORKERS 可覆盖",
+      "data_utils.py": "_ensure_link: Windows 目录符号链接 + GT-only 复制兜底",
+      "evaluate.py": "TrackEval 源码路径可配置",
+      "make_diff_report.py": "合成基线路径可配置，load() 正确处理绝对路径",
+      "extract_features.py": "_make_pool: 无 fork 的平台自动改用线程池"
+    }
+  },
+  "stages_completed_on_old_server": [
+    "数据/权重/源码/wheels 下载与校验 (15 GB)",
+    "服务器环境部署 (ROCm torch 2.9.1, gpu_available=True)",
+    "三基准特征抽取 (34/36 序列完成，MOT20-04 未完成)",
+    "DanceTrack + MOT17 全量跟踪 (32 序列 x 27 配置, 156 秒)",
+    "DanceTrack 官方评估 (进行中被断连)",
+    "单序列 x 全策略健全性检查 (TrackEval)",
+    "ReID 特征可分性诊断 (DanceTrack / MOT17)"
+  ],
+  "setup": {
+    "input": "过滤后 GT 框 (oracle-detection, association-only)",
+    "reid": "OSNet-x1_0 MSMT17, 512-d, FP32, L2-normalized, shared cache",
+    "metrics": "TrackEval HOTA/CLEAR/Identity",
+    "gt_usage": "tracker never sees GT ids; ids used only post-hoc",
+    "statistics": "sequence-level bootstrap 1000x, 95% CI",
+    "preregistered_rules": "exp_config.py DECISION_RULES"
+  },
+  "sanity_single_sequence": {
+    "sequence": "dancetrack0004",
+    "n_trackers": 21,
+    "values": [
+      {"tracker": "S0_motion", "HOTA": 0.8205, "IDF1": 0.8356, "IDSW": 10, "AssA": 0.6907},
+      {"tracker": "S1_global", "HOTA": 0.7208, "IDF1": 0.6895, "IDSW": 8, "AssA": 0.5221},
+      {"tracker": "S2_countgated", "HOTA": 0.7208, "IDF1": 0.6895, "IDSW": 8, "AssA": 0.5221},
+      {"tracker": "S3_hist_auc", "HOTA": 0.5953, "IDF1": 0.5922, "IDSW": 12, "AssA": 0.3609},
+      {"tracker": "S3_frame_calib", "HOTA": 0.5953, "IDF1": 0.5922, "IDSW": 12, "AssA": 0.3609},
+      {"tracker": "S3_online", "HOTA": 0.5567, "IDF1": 0.5231, "IDSW": 12, "AssA": 0.3135},
+      {"tracker": "S3_saturated", "HOTA": 0.7592, "IDF1": 0.7839, "IDSW": 13, "AssA": 0.5853},
+      {"tracker": "S3_no_abstain", "HOTA": 0.5953, "IDF1": 0.5922, "IDSW": 12, "AssA": 0.3609},
+      {"tracker": "tau_00", "HOTA": 0.8205, "IDF1": 0.8356, "IDSW": 10, "AssA": 0.6907},
+      {"tracker": "tau_07", "HOTA": 0.7620, "IDF1": 0.7928, "IDSW": 12, "AssA": 0.6061},
+      {"tracker": "seed_11..71", "HOTA": 0.5953, "IDF1": 0.5922, "IDSW": 12, "AssA": 0.3609}
+    ],
+    "observation": "全量 ReID (S1) 已劣于 motion-only；S3 各变体更差；hist_auc 与 frame_calib 结果完全相同；在线更新进一步退化；饱和触发反而好于标称 S3 但仍劣于 S0。"
+  },
+  "feature_diagnostics": {
+    "dancetrack": {"pairwise_auc": 0.6807, "same_id_cos": 0.6891, "diff_id_cos": 0.6113, "top64_energy": 0.6086, "n_seq": 6},
+    "mot17": {"pairwise_auc": 0.8875, "same_id_cos": 0.6728, "diff_id_cos": 0.4041, "top64_energy": 0.5848, "n_seq": 6},
+    "note": "同口径修正后 (单帧 vs 单帧)；早期口径因模板/单帧不对等曾得到 AUC=0.0973，已废弃。"
+  },
+  "dancetrack_full_run_stats": {
+    "n_ambiguous_detections": 177622,
+    "nominal_tau_trigger_rate": 0.012,
+    "nominal_cost_ratio": 0.0038,
+    "saturated_trigger_rate": 1.0,
+    "saturated_cost_ratio": 0.3058,
+    "observation": "oracle-detection 下 motion 判别已足够确定，混淆窗口几乎不存在；标称工作点方法退化为 S0。"
+  },
+  "known_limitation": "oracle-detection 使 DetA≈1 且混淆事件稀少，结论不能直接外推到含误检/漏检的真实检测器输出；如需外推，应另做检测扰动稳健性实验。",
+  "next_step": "等待新实例：更新 ~/.ssh/config 的 HostName/Port/IdentityFile（别名保持 radeon-cloud）后执行 bash /d/mot_exp_assets/resume_v4.sh radeon-cloud；同一实例续跑用 SKIP_SETUP=1。v4 会先把本机已有特征 --push 推回服务器，逐序列抽取并每序列立即回拉，跨实例最多只丢当前序列。四条结论全量判定完成前，按用户规则不触发任何分支：既不做优化/新产物，也不提交结果改变的正式审核报告。"
+}

@@ -1,0 +1,45 @@
+{
+  "stage": "explore",
+  "utc": "2026-11-15T13:53:25+00:00",
+  "status": "PHASE2_STAGE_DONE",
+  "frozen_sha256": "71dc864eb6718fac6c0244aac328b964eb608138ce6e92416f516ebb4be76663",
+  "n_conditions": 28,
+  "seeds": [
+    11,
+    23,
+    37
+  ],
+  "strategies": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5"
+  ],
+  "benchmarks": [
+    "mot17",
+    "dancetrack"
+  ],
+  "n_seqs_per_benchmark": 5,
+  "max_frames": 500,
+  "groups": 840,
+  "cells": 5040,
+  "elapsed_s": 5071.1,
+  "main_response": [
+    "A4",
+    "A0"
+  ],
+  "score_pool": {
+    "n": 150650,
+    "mean": 0.7685073307746286,
+    "std": 0.379710255569799,
+    "p10": 0.0,
+    "p50": 0.999,
+    "p90": 1.0,
+    "n_unique": 15671,
+    "mode": "empirical",
+    "source": "all MOT17 TRAIN det.txt, uniform per-file sample, clipped to [0,1]; fixed before any formal cell"
+  },
+  "note": "smoke stage is engineering-only; never used to fit P; AssA uses official HOTA alignment-weighted matching, so the TP set can legitimately vary with the tracker id assignment even when detection boxes are identical"
+}

@@ -1,0 +1,898 @@
+{
+  "protocol": "noise_gradient_v1",
+  "frozen_at": "2026-11-15T11:50:28+00:00",
+  "freeze_revision": 4,
+  "revision_history": [
+    "r1 quantile_anchor_v1: first freeze, selftest crashed on missing import math (no experiment had been run)",
+    "r2 quantile_anchor_v1 + fixed upper bound: selftest 15/15 passed, but grid skipped the entire low-noise beta region",
+    "r3 hybrid_v1: restore design-v1 low levels, keep one Theta-hat quantile anchor and the pre-declared upper bound",
+    "r4 (FINAL): add the geometry-keyed feature-cache rule after a GPU-cost estimate showed naive full re-extraction needs ~30 h; all revisions made BEFORE any GPU run or DeltaAssA observation"
+  ],
+  "frozen_by": "user delegated all 5 decisions ('按照你认为有利的就行'), 2026-11-15",
+  "status": "FROZEN - do not edit; hash-sealed",
+  "decisions": {
+    "D1_primary_contribution": "boundary measurement + pre-evaluation label-free gain-sign predictability (NOT a new gate)",
+    "D1_rationale": "novelty search showed every mechanism is already covered; only the methodological combination survives",
+    "D2_datasets": {
+      "main": [
+        "mot17",
+        "dancetrack"
+      ],
+      "external_validation": [
+        "mot20"
+      ],
+      "dancetrack_note": "GT-based injection; no official det needed"
+    },
+    "D3_A5": "INCLUDED but exploratory: MOT17 explore-subset only, used solely for RQ3 attribution, excluded from H1/H2/H3 and from the Holm family",
+    "D4_two_stage_and_freeze": true,
+    "D4_note": "Phase 0 hash-seal; explore fits P and locates boundaries; confirm is one-shot with no threshold/condition changes",
+    "D5_execute_now": true
+  },
+  "research_questions": {
+    "RQ1": "response surface of marginal association gain vs orthogonal detection-noise components; is there a sign-flip boundary?",
+    "RQ2": "MAIN: predict sign/magnitude of the gain BEFORE evaluation, without GT labels, and transfer across datasets/detectors",
+    "RQ3": "where do published association gains sit on that surface; how much is attributable to detector noise rather than mechanism"
+  },
+  "hypotheses": {
+    "H1": "DeltaAssA non-monotone in >=1 component with finite bootstrap CI for eta*_0",
+    "H2": "label-free criterion predicts DeltaAssA sign significantly >0.5 and beats simple baselines under leave-one-out validation",
+    "H3": "component partial derivatives have opposite signs with non-overlapping CIs"
+  },
+  "theta": {
+    "components": [
+      "sigma_loc",
+      "beta",
+      "lambd",
+      "tau"
+    ],
+    "sigma_loc": "centre/scale jitter normalized by target height",
+    "beta": "per-target frame deletion rate (FN)",
+    "lambd": "false positives per GT box per frame",
+    "tau": "temporal correlation length L in frames (control variable, NOT claimed novel)"
+  },
+  "grid": {
+    "rule": "hybrid_v1",
+    "caps": {
+      "sigma_loc": 0.2,
+      "beta": 0.75,
+      "lambd": 0.5
+    },
+    "rule_note": "0 + design-v1 low levels + one Theta-hat quantile + pre-declared upper bound; frozen before any GPU result",
+    "rejection_note": "pure quantile anchoring rejected: would skip 0..0.39 beta where the gain window is most likely",
+    "quantiles": {
+      "sigma_loc": {
+        "p10": 0.010196378555555847,
+        "p25": 0.017568041418295804,
+        "p50": 0.02028381307527316,
+        "p75": 0.0320021821352829,
+        "p90": 0.034702451148275026
+      },
+      "beta": {
+        "p10": 0.29690015639701073,
+        "p25": 0.3932810512929207,
+        "p50": 0.431924882629108,
+        "p75": 0.5181637156234864,
+        "p90": 0.6139226529462163
+      },
+      "lambd": {
+        "p10": 0.02432552851686768,
+        "p25": 0.0398258931387598,
+        "p50": 0.06924215281563985,
+        "p75": 0.15328296596308125,
+        "p90": 0.3017179880702744
+      },
+      "tau": {
+        "p10": 6.4171923049417146,
+        "p25": 8.145516074450084,
+        "p50": 10.014851814851815,
+        "p75": 17.467775467775468,
+        "p90": 24.82734740772656
+      }
+    },
+    "sigma_loc": [
+      0.0,
+      0.02,
+      0.032002,
+      0.05,
+      0.1,
+      0.2
+    ],
+    "beta": [
+      0.0,
+      0.05,
+      0.1,
+      0.2,
+      0.431925,
+      0.75
+    ],
+    "lambd": [
+      0.0,
+      0.05,
+      0.1,
+      0.2,
+      0.301718,
+      0.5
+    ],
+    "tau": [
+      1,
+      10,
+      25
+    ],
+    "interaction": {
+      "sigma_loc": [
+        0.05,
+        0.2
+      ],
+      "beta": [
+        0.2,
+        0.431925
+      ],
+      "lambd": [
+        0.2,
+        0.301718
+      ],
+      "tau": [
+        1,
+        25
+      ]
+    },
+    "interaction_note": "interaction cells deliberately pair a moderate level with a high/real-detector level so interactions are observable; pre-declared, not fitted"
+  },
+  "conditions": [
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.0,
+      "lambd": 0.0,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.02,
+      "beta": 0.0,
+      "lambd": 0.0,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.032002,
+      "beta": 0.0,
+      "lambd": 0.0,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.05,
+      "beta": 0.0,
+      "lambd": 0.0,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.1,
+      "beta": 0.0,
+      "lambd": 0.0,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.2,
+      "beta": 0.0,
+      "lambd": 0.0,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.05,
+      "lambd": 0.0,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.1,
+      "lambd": 0.0,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.2,
+      "lambd": 0.0,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.431925,
+      "lambd": 0.0,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.75,
+      "lambd": 0.0,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.0,
+      "lambd": 0.05,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.0,
+      "lambd": 0.1,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.0,
+      "lambd": 0.2,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.0,
+      "lambd": 0.301718,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.0,
+      "lambd": 0.5,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.0,
+      "lambd": 0.0,
+      "tau": 10
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.0,
+      "lambd": 0.0,
+      "tau": 25
+    },
+    {
+      "sigma_loc": 0.05,
+      "beta": 0.0,
+      "lambd": 0.2,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.05,
+      "beta": 0.0,
+      "lambd": 0.301718,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.2,
+      "beta": 0.0,
+      "lambd": 0.2,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.2,
+      "beta": 0.0,
+      "lambd": 0.301718,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.2,
+      "lambd": 0.2,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.2,
+      "lambd": 0.301718,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.431925,
+      "lambd": 0.2,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.431925,
+      "lambd": 0.301718,
+      "tau": 1
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.2,
+      "lambd": 0.0,
+      "tau": 25
+    },
+    {
+      "sigma_loc": 0.0,
+      "beta": 0.431925,
+      "lambd": 0.0,
+      "tau": 25
+    }
+  ],
+  "n_conditions_unique": 28,
+  "n_conditions_note": "design v1 quoted 36; the de-duplicated enumeration is smaller because the all-zero baseline recurs across single-factor sweeps. Difference is an accounting correction made BEFORE any result, not a result-driven cut.",
+  "response": {
+    "delta_assa": "AssA(strategy, Theta) - AssA(A0_IoU, Theta)",
+    "delta_idsw": "IDSW(strategy, Theta) - IDSW(A0_IoU, Theta)  (negative is better)",
+    "primary_metrics": [
+      "AssA",
+      "IDSW",
+      "IDF1"
+    ],
+    "forbidden_as_primary": [
+      "HOTA",
+      "MOTA"
+    ],
+    "reason": "noise degrades DetA; HOTA=sqrt(DetA*AssA) masks association gain",
+    "secondary": [
+      "DetA",
+      "Frag",
+      "MOTA",
+      "HOTA",
+      "reid_calls",
+      "trigger_rate"
+    ],
+    "boundaries": {
+      "eta_star_0": "d DeltaAssA / d eta = 0",
+      "eta_dagger": "|DeltaAssA(eta)| < |DeltaDetA(eta)|",
+      "eta_flip": "minimum eta where DeltaIDSW > 0"
+    }
+  },
+  "strategies": {
+    "A0": "SORT / IoU-only (reference for every Delta)",
+    "A1": "ByteTrack-style two-stage low-score recovery",
+    "A2": "OSNet appearance fusion + Hungarian",
+    "A3": "original PDE arbitration / confusion trigger (negative control)",
+    "A4": "cross-agreement abstention (Jaccard gate) - MEASURED mechanism, novelty NOT claimed (PPLR / CropTrack / AAI / LLTrack precede it)",
+    "A5": "set-relative residual rescoring (VLA-ReID-like CAS approximation) - EXPLORATORY, RQ3 only",
+    "fixed": "identical cached OSNet FP32 features for all strategies"
+  },
+  "sampling": {
+    "explore": "5 sequences x first 500 frames per benchmark",
+    "confirm": "all sequences, all frames, one shot",
+    "seeds": [
+      11,
+      23,
+      37
+    ],
+    "min_seeds_per_cell": 3,
+    "calibration_of_grid": "official TRAIN det.txt Theta-hat quantiles, computed once in Phase 1 and then frozen"
+  },
+  "feature_cache": {
+    "rule": "geometry_keyed_v1",
+    "reextract_rule": "only sigma_loc>0 invalidates cached OSNet features",
+    "beta_tau": "surviving TP boxes are bit-identical to GT boxes, so the GT-keyed feature cache is reused unchanged",
+    "lambda_note": "TP features reused; only injected FP crops need extraction (~lambda x n_GT extra crops)",
+    "conditions_requiring_reextraction": 9,
+    "conditions_total": 28,
+    "cost_note": "naive full re-extraction over all conditions was estimated at ~30 GPU-hours; geometry keying removes most of it. Structural fact, not a result-driven approximation.",
+    "verification": "phase1_selftest checks beta_lambda_tau_reuse_gt_features and sigma_loc_forces_reextraction"
+  },
+  "statistics": {
+    "bootstrap_n": 1000,
+    "bootstrap_seed": 20261115,
+    "ci": 0.95,
+    "correction": "Holm",
+    "alpha": 0.05,
+    "primary_family": [
+      "H1",
+      "H2",
+      "H3"
+    ],
+    "leave_one_out_primary": [
+      "dataset",
+      "detector"
+    ],
+    "leave_one_out_secondary": [
+      "noise_component_family"
+    ],
+    "predictor": "logistic regression, <=8 features, coefficients reported",
+    "predictor_baselines": [
+      "detection confidence only",
+      "beta/lambda only",
+      "constant majority class"
+    ],
+    "h2_rule": "H2 holds only if the 95% CI lower bound of sign accuracy >0.5 AND it beats every baseline under all primary LOO splits",
+    "report_both_regimes": true,
+    "regimes": [
+      "injected (internal validity)",
+      "official det anchor (external validity)"
+    ],
+    "no_result_driven_regime_switch": true
+  },
+  "datasets": {
+    "mot17": {
+      "train_sequences_with_gt": 7,
+      "det_files_total": 42,
+      "det_files_calibratable": 21,
+      "role": "main"
+    },
+    "dancetrack": {
+      "val_sequences": 25,
+      "official_det": 0,
+      "role": "main"
+    },
+    "mot20": {
+      "train_sequences": 4,
+      "det_files_total": 8,
+      "det_files_calibratable": 4,
+      "role": "external validation"
+    },
+    "correction": "design v1 quoted '42 MOT17 / 8 MOT20 det for Theta calibration'; those totals include TEST which has no public GT. Calibratable counts are 21 and 4."
+  },
+  "calibration": {
+    "n_sequences": 25,
+    "score_distribution": {
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.5390349999999999,
+      "p90": 1.0
+    },
+    "per_sequence": [
+      {
+        "n_gt": 18581,
+        "n_det": 7267,
+        "n_match": 4828,
+        "sigma_loc": 0.0320021821352829,
+        "sigma_loc_rmse": 0.038976375954462884,
+        "sigma_loc_mad_x": 0.03485387161415216,
+        "sigma_loc_mad_y": 0.028870174165457306,
+        "scale_mad_w": 0.1714909179873603,
+        "scale_mad_h": 0.08336288682490538,
+        "beta": 0.7401646843549863,
+        "lambd": 0.1312631182390614,
+        "tau": 22.845514950166113,
+        "tau_p90": 53.799999999999955,
+        "n_runs": 602,
+        "score_mean": 0.394921744719279,
+        "label": "MOT17.zip:MOT17/train/MOT17-02-DPM/det/det.txt"
+      },
+      {
+        "n_gt": 18581,
+        "n_det": 8186,
+        "n_match": 6558,
+        "sigma_loc": 0.011140488225748405,
+        "sigma_loc_rmse": 0.026336671324291672,
+        "sigma_loc_mad_x": 0.009859023423375583,
+        "sigma_loc_mad_y": 0.012289044428002091,
+        "scale_mad_w": 0.0478830143540669,
+        "scale_mad_h": 0.02476864715189876,
+        "beta": 0.6470588235294117,
+        "lambd": 0.08761638232603197,
+        "tau": 41.17465753424658,
+        "tau_p90": 128.50000000000017,
+        "n_runs": 292,
+        "score_mean": 0.9224356217933056,
+        "label": "MOT17.zip:MOT17/train/MOT17-02-FRCNN/det/det.txt"
+      },
+      {
+        "n_gt": 18581,
+        "n_det": 11639,
+        "n_match": 8953,
+        "sigma_loc": 0.025991600171253196,
+        "sigma_loc_rmse": 0.03403104340079679,
+        "sigma_loc_mad_x": 0.02529983461998104,
+        "sigma_loc_mad_y": 0.02666542568807382,
+        "scale_mad_w": 0.09701926315789468,
+        "scale_mad_h": 0.05434859366076524,
+        "beta": 0.5181637156234864,
+        "lambd": 0.1445562671546203,
+        "tau": 8.145516074450084,
+        "tau_p90": 19.90000000000009,
+        "n_runs": 1182,
+        "score_mean": 0.959168399347023,
+        "label": "MOT17.zip:MOT17/train/MOT17-02-SDP/det/det.txt"
+      },
+      {
+        "n_gt": 47557,
+        "n_det": 39437,
+        "n_match": 22886,
+        "sigma_loc": 0.029874370504909174,
+        "sigma_loc_rmse": 0.03670925385705112,
+        "sigma_loc_mad_x": 0.02822520312935995,
+        "sigma_loc_mad_y": 0.031437142593364685,
+        "scale_mad_w": 0.14615612000000003,
+        "scale_mad_h": 0.06812522459893053,
+        "beta": 0.5187669533402023,
+        "lambd": 0.3480244758920874,
+        "tau": 14.781905332534452,
+        "tau_p90": 28.0,
+        "n_runs": 1669,
+        "score_mean": 0.5154036985631006,
+        "label": "MOT17.zip:MOT17/train/MOT17-04-DPM/det/det.txt"
+      },
+      {
+        "n_gt": 47557,
+        "n_det": 28406,
+        "n_match": 26512,
+        "sigma_loc": 0.009566972108760806,
+        "sigma_loc_rmse": 0.03435661983148705,
+        "sigma_loc_mad_x": 0.005593732694913466,
+        "sigma_loc_mad_y": 0.012319255870281714,
+        "scale_mad_w": 0.03292890566037721,
+        "scale_mad_h": 0.022725368880305175,
+        "beta": 0.4425216056521648,
+        "lambd": 0.0398258931387598,
+        "tau": 81.56976744186046,
+        "tau_p90": 172.20000000000016,
+        "n_runs": 258,
+        "score_mean": 0.9795506583116244,
+        "label": "MOT17.zip:MOT17/train/MOT17-04-FRCNN/det/det.txt"
+      },
+      {
+        "n_gt": 47557,
+        "n_det": 37150,
+        "n_match": 36236,
+        "sigma_loc": 0.02028381307527316,
+        "sigma_loc_rmse": 0.023785419567579878,
+        "sigma_loc_mad_x": 0.019139018181818585,
+        "sigma_loc_mad_y": 0.021367361296642653,
+        "scale_mad_w": 0.07569928427419348,
+        "scale_mad_h": 0.03897684417344174,
+        "beta": 0.238051180688437,
+        "lambd": 0.01921904241226318,
+        "tau": 8.24544792425346,
+        "tau_p90": 14.0,
+        "n_runs": 1373,
+        "score_mean": 0.9791955854643336,
+        "label": "MOT17.zip:MOT17/train/MOT17-04-SDP/det/det.txt"
+      },
+      {
+        "n_gt": 6917,
+        "n_det": 4333,
+        "n_match": 3019,
+        "sigma_loc": 0.032245733449054854,
+        "sigma_loc_rmse": 0.0422052841113555,
+        "sigma_loc_mad_x": 0.03279933743550028,
+        "sigma_loc_mad_y": 0.03168245752979367,
+        "scale_mad_w": 0.13480853169533166,
+        "scale_mad_h": 0.08117442763452917,
+        "beta": 0.563539106549082,
+        "lambd": 0.1899667485904294,
+        "tau": 8.154811715481172,
+        "tau_p90": 19.0,
+        "n_runs": 478,
+        "score_mean": 0.564264834880937,
+        "label": "MOT17.zip:MOT17/train/MOT17-05-DPM/det/det.txt"
+      },
+      {
+        "n_gt": 6917,
+        "n_det": 3848,
+        "n_match": 3694,
+        "sigma_loc": 0.017568041418295804,
+        "sigma_loc_rmse": 0.026386494975991458,
+        "sigma_loc_mad_x": 0.013962644964944882,
+        "sigma_loc_mad_y": 0.02055034559643251,
+        "scale_mad_w": 0.06090486520231212,
+        "scale_mad_h": 0.045428125633994385,
+        "beta": 0.4659534480266011,
+        "lambd": 0.022263987277721557,
+        "tau": 10.962585034013605,
+        "tau_p90": 24.0,
+        "n_runs": 294,
+        "score_mean": 0.9266247401247402,
+        "label": "MOT17.zip:MOT17/train/MOT17-05-FRCNN/det/det.txt"
+      },
+      {
+        "n_gt": 6917,
+        "n_det": 4767,
+        "n_match": 4478,
+        "sigma_loc": 0.019208929557798928,
+        "sigma_loc_rmse": 0.02494501972350511,
+        "sigma_loc_mad_x": 0.020255588960393346,
+        "sigma_loc_mad_y": 0.018101852540017938,
+        "scale_mad_w": 0.08051237561528718,
+        "scale_mad_h": 0.041250528123658294,
+        "beta": 0.3526095127945641,
+        "lambd": 0.04178111898221772,
+        "tau": 5.156448202959831,
+        "tau_p90": 11.0,
+        "n_runs": 473,
+        "score_mean": 0.9577386196769456,
+        "label": "MOT17.zip:MOT17/train/MOT17-05-SDP/det/det.txt"
+      },
+      {
+        "n_gt": 5325,
+        "n_det": 5976,
+        "n_match": 3389,
+        "sigma_loc": 0.035837973683965255,
+        "sigma_loc_rmse": 0.04129279091877653,
+        "sigma_loc_mad_x": 0.03551017938024049,
+        "sigma_loc_mad_y": 0.03616279684881018,
+        "scale_mad_w": 0.12388695454545466,
+        "scale_mad_h": 0.07496997954545462,
+        "beta": 0.3635680751173709,
+        "lambd": 0.48582159624413146,
+        "tau": 6.1265822784810124,
+        "tau_p90": 12.0,
+        "n_runs": 316,
+        "score_mean": 0.610121304693407,
+        "label": "MOT17.zip:MOT17/train/MOT17-09-DPM/det/det.txt"
+      },
+      {
+        "n_gt": 5325,
+        "n_det": 3049,
+        "n_match": 3025,
+        "sigma_loc": 0.008836940722293343,
+        "sigma_loc_rmse": 0.016224987165261145,
+        "sigma_loc_mad_x": 0.007728821214392513,
+        "sigma_loc_mad_y": 0.009820812863231283,
+        "scale_mad_w": 0.03371799331103684,
+        "scale_mad_h": 0.021275382573697547,
+        "beta": 0.431924882629108,
+        "lambd": 0.004507042253521127,
+        "tau": 26.136363636363637,
+        "tau_p90": 69.89999999999999,
+        "n_runs": 88,
+        "score_mean": 0.9663299442440145,
+        "label": "MOT17.zip:MOT17/train/MOT17-09-FRCNN/det/det.txt"
+      },
+      {
+        "n_gt": 5325,
+        "n_det": 3607,
+        "n_match": 3461,
+        "sigma_loc": 0.01913966255020008,
+        "sigma_loc_rmse": 0.022060035603607652,
+        "sigma_loc_mad_x": 0.02009500050851237,
+        "sigma_loc_mad_y": 0.01813406517121714,
+        "scale_mad_w": 0.08281965744814593,
+        "scale_mad_h": 0.037117121825225925,
+        "beta": 0.3500469483568075,
+        "lambd": 0.027417840375586856,
+        "tau": 7.516129032258065,
+        "tau_p90": 16.0,
+        "n_runs": 248,
+        "score_mean": 0.9777310784585529,
+        "label": "MOT17.zip:MOT17/train/MOT17-09-SDP/det/det.txt"
+      },
+      {
+        "n_gt": 12839,
+        "n_det": 8832,
+        "n_match": 5595,
+        "sigma_loc": 0.037166056685546144,
+        "sigma_loc_rmse": 0.04339209946912243,
+        "sigma_loc_mad_x": 0.03632935877862572,
+        "sigma_loc_mad_y": 0.037984328740157426,
+        "scale_mad_w": 0.14345925268656717,
+        "scale_mad_h": 0.07681737769560917,
+        "beta": 0.564218397071423,
+        "lambd": 0.25212243944232415,
+        "tau": 9.359173126614987,
+        "tau_p90": 23.0,
+        "n_runs": 774,
+        "score_mean": 0.46366482252604163,
+        "label": "MOT17.zip:MOT17/train/MOT17-10-DPM/det/det.txt"
+      },
+      {
+        "n_gt": 12839,
+        "n_det": 9701,
+        "n_match": 7733,
+        "sigma_loc": 0.020016876203799765,
+        "sigma_loc_rmse": 0.03334492361154687,
+        "sigma_loc_mad_x": 0.017246109839816934,
+        "sigma_loc_mad_y": 0.02244821510297556,
+        "scale_mad_w": 0.05387003619909497,
+        "scale_mad_h": 0.03083217910447761,
+        "beta": 0.3976945244956772,
+        "lambd": 0.15328296596308125,
+        "tau": 10.191616766467066,
+        "tau_p90": 28.0,
+        "n_runs": 501,
+        "score_mean": 0.9038733120296875,
+        "label": "MOT17.zip:MOT17/train/MOT17-10-FRCNN/det/det.txt"
+      },
+      {
+        "n_gt": 12839,
+        "n_det": 10371,
+        "n_match": 9482,
+        "sigma_loc": 0.032403550115463906,
+        "sigma_loc_rmse": 0.03831033662117007,
+        "sigma_loc_mad_x": 0.03274384068167621,
+        "sigma_loc_mad_y": 0.03205964780816794,
+        "scale_mad_w": 0.08315865384615376,
+        "scale_mad_h": 0.049999723577235686,
+        "beta": 0.2614689617571462,
+        "lambd": 0.06924215281563985,
+        "tau": 5.494271685761047,
+        "tau_p90": 13.0,
+        "n_runs": 611,
+        "score_mean": 0.9557350303731559,
+        "label": "MOT17.zip:MOT17/train/MOT17-10-SDP/det/det.txt"
+      },
+      {
+        "n_gt": 9436,
+        "n_det": 8590,
+        "n_match": 5431,
+        "sigma_loc": 0.028074197507009385,
+        "sigma_loc_rmse": 0.031863986728987756,
+        "sigma_loc_mad_x": 0.02794085939767795,
+        "sigma_loc_mad_y": 0.028206905314910668,
+        "scale_mad_w": 0.13898641846153836,
+        "scale_mad_h": 0.06324499501282417,
+        "beta": 0.4244383213225943,
+        "lambd": 0.3347816871555744,
+        "tau": 13.26158940397351,
+        "tau_p90": 31.0,
+        "n_runs": 302,
+        "score_mean": 0.8555921098289871,
+        "label": "MOT17.zip:MOT17/train/MOT17-11-DPM/det/det.txt"
+      },
+      {
+        "n_gt": 9436,
+        "n_det": 6007,
+        "n_match": 5725,
+        "sigma_loc": 0.009362053643699544,
+        "sigma_loc_rmse": 0.017600475748125528,
+        "sigma_loc_mad_x": 0.007631537354668023,
+        "sigma_loc_mad_y": 0.01081922984594201,
+        "scale_mad_w": 0.03265467561242011,
+        "scale_mad_h": 0.021228136363636445,
+        "beta": 0.3932810512929207,
+        "lambd": 0.029885544722339976,
+        "tau": 20.848314606741575,
+        "tau_p90": 63.900000000000034,
+        "n_runs": 178,
+        "score_mean": 0.9443738971200267,
+        "label": "MOT17.zip:MOT17/train/MOT17-11-FRCNN/det/det.txt"
+      },
+      {
+        "n_gt": 9436,
+        "n_det": 7509,
+        "n_match": 7010,
+        "sigma_loc": 0.01839807689118285,
+        "sigma_loc_rmse": 0.024855602924047236,
+        "sigma_loc_mad_x": 0.018696096862134248,
+        "sigma_loc_mad_y": 0.018095149314372803,
+        "scale_mad_w": 0.07448145661476457,
+        "scale_mad_h": 0.03830380807986963,
+        "beta": 0.2571004662992794,
+        "lambd": 0.05288257736328953,
+        "tau": 6.853107344632768,
+        "tau_p90": 16.0,
+        "n_runs": 354,
+        "score_mean": 0.9712318551072047,
+        "label": "MOT17.zip:MOT17/train/MOT17-11-SDP/det/det.txt"
+      },
+      {
+        "n_gt": 11642,
+        "n_det": 5355,
+        "n_match": 3160,
+        "sigma_loc": 0.03666941378370546,
+        "sigma_loc_rmse": 0.04231753651757223,
+        "sigma_loc_mad_x": 0.03609919518017869,
+        "sigma_loc_mad_y": 0.03723090009420373,
+        "scale_mad_w": 0.1680327921802325,
+        "scale_mad_h": 0.09228334655870445,
+        "beta": 0.7285689744030235,
+        "lambd": 0.18854148771688714,
+        "tau": 13.614767255216693,
+        "tau_p90": 42.0,
+        "n_runs": 623,
+        "score_mean": 0.13489590522689074,
+        "label": "MOT17.zip:MOT17/train/MOT17-13-DPM/det/det.txt"
+      },
+      {
+        "n_gt": 11642,
+        "n_det": 8442,
+        "n_match": 6854,
+        "sigma_loc": 0.019122102649245173,
+        "sigma_loc_rmse": 0.03588409138589474,
+        "sigma_loc_mad_x": 0.01565743710691805,
+        "sigma_loc_mad_y": 0.022048906610066726,
+        "scale_mad_w": 0.06054549757281562,
+        "scale_mad_h": 0.03493809326093902,
+        "beta": 0.4112695413159251,
+        "lambd": 0.1364026799518983,
+        "tau": 7.849180327868853,
+        "tau_p90": 19.0,
+        "n_runs": 610,
+        "score_mean": 0.8606570717839374,
+        "label": "MOT17.zip:MOT17/train/MOT17-13-FRCNN/det/det.txt"
+      },
+      {
+        "n_gt": 11642,
+        "n_det": 7744,
+        "n_match": 6738,
+        "sigma_loc": 0.03299916734473967,
+        "sigma_loc_rmse": 0.039849902489121465,
+        "sigma_loc_mad_x": 0.03176780176429071,
+        "sigma_loc_mad_y": 0.03418620865139909,
+        "scale_mad_w": 0.09883999999999996,
+        "scale_mad_h": 0.06058746195652174,
+        "beta": 0.42123346504037107,
+        "lambd": 0.08641126954131592,
+        "tau": 9.48549323017408,
+        "tau_p90": 19.400000000000034,
+        "n_runs": 517,
+        "score_mean": 0.9307611053719008,
+        "label": "MOT17.zip:MOT17/train/MOT17-13-SDP/det/det.txt"
+      },
+      {
+        "n_gt": 19870,
+        "n_det": 12610,
+        "n_match": 11468,
+        "sigma_loc": 0.0124077779042422,
+        "sigma_loc_rmse": 0.01871023998514108,
+        "sigma_loc_mad_x": 0.00988207928488146,
+        "sigma_loc_mad_y": 0.014500014277555682,
+        "scale_mad_w": 0.03955861433204496,
+        "scale_mad_h": 0.027973584905660376,
+        "beta": 0.4228485153497735,
+        "lambd": 0.05747357825868143,
+        "tau": 17.467775467775468,
+        "tau_p90": 45.0,
+        "n_runs": 481,
+        "score_mean": 0.34631245043616177,
+        "label": "MOT20.zip:MOT20/train/MOT20-01/det/det.txt"
+      },
+      {
+        "n_gt": 154742,
+        "n_det": 89837,
+        "n_match": 82378,
+        "sigma_loc": 0.01154435220139482,
+        "sigma_loc_rmse": 0.017297018765993807,
+        "sigma_loc_mad_x": 0.008598680629999175,
+        "sigma_loc_mad_y": 0.013878286166633683,
+        "scale_mad_w": 0.03770091911764706,
+        "scale_mad_h": 0.02601052631578947,
+        "beta": 0.4676429153041838,
+        "lambd": 0.04820281500820721,
+        "tau": 22.863823064770934,
+        "tau_p90": 53.59999999999991,
+        "n_runs": 3165,
+        "score_mean": 0.41758963456037046,
+        "label": "MOT20.zip:MOT20/train/MOT20-02/det/det.txt"
+      },
+      {
+        "n_gt": 313658,
+        "n_det": 177347,
+        "n_match": 165936,
+        "sigma_loc": 0.022824894801828477,
+        "sigma_loc_rmse": 0.03465941590229863,
+        "sigma_loc_mad_x": 0.01816911764705882,
+        "sigma_loc_mad_y": 0.026680232558139533,
+        "scale_mad_w": 0.05202105263157894,
+        "scale_mad_h": 0.04364104838709677,
+        "beta": 0.47096519138679704,
+        "lambd": 0.0363803888311473,
+        "tau": 9.466324895866709,
+        "tau_p90": 20.0,
+        "n_runs": 15605,
+        "score_mean": 0.011525427551636058,
+        "label": "MOT20.zip:MOT20/train/MOT20-03/det/det.txt"
+      },
+      {
+        "n_gt": 646344,
+        "n_det": 381349,
+        "n_match": 345598,
+        "sigma_loc": 0.020440566009826203,
+        "sigma_loc_rmse": 0.02934703864741568,
+        "sigma_loc_mad_x": 0.01631388690779419,
+        "sigma_loc_mad_y": 0.023864001583217886,
+        "scale_mad_w": 0.05637166240409207,
+        "scale_mad_h": 0.04033889778046203,
+        "beta": 0.46530330597947844,
+        "lambd": 0.055312650848464595,
+        "tau": 10.014851814851815,
+        "tau_p90": 21.0,
+        "n_runs": 30030,
+        "score_mean": 0.009885957482516016,
+        "label": "MOT20.zip:MOT20/train/MOT20-05/det/det.txt"
+      }
+    ]
+  },
+  "quality_gate": {
+    "idsw_remap": "src_gid side channel; the old _key(frame, round(box,1)) lookup is INVALID under injection (selftest proves it)",
+    "identity_condition": "Theta=0 must reproduce GT boxes exactly",
+    "determinism": "same seed -> identical detections"
+  },
+  "falsification": {
+    "novel_claim": "no retrieved work satisfies all four: (a) orthogonal continuous noise calibration sweep, (b) response is marginal association gain, (c) formal sign-flip boundary, (d) pre-evaluation label-free predictor with LOO",
+    "if_disproved": "withdraw the novelty claim, downgrade to a cross-dataset / cross-detector replication+extension",
+    "search_limitation": "'not retrieved' is NOT 'does not exist'"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "digest": "71dc864eb6718fac6c0244aac328b964eb608138ce6e92416f516ebb4be76663"
+  }
+}

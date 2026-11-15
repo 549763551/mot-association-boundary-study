@@ -1,0 +1,7 @@
+# Byte-exact archive.
+# SHA256SUMS.txt records hashes of the exact published bytes, and several
+# source files (CSV / some JSON) use CRLF while others use LF. Disable all
+# EOL normalisation so a clone on any platform reproduces identical bytes.
+# Side effect: git treats files as binary for diff purposes, which is
+# intentional for a frozen archive.
+* -text

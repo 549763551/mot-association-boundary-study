@@ -1,0 +1,13 @@
+{
+  "status": "CROSS_SOURCE_CALIBRATION_OK",
+  "local_sequences": 25,
+  "server_sequences": 25,
+  "matched_sequences": 25,
+  "n_field_diffs": 0,
+  "diffs": [],
+  "quality_gate": "IDSW_QUALITY_GATE_OK",
+  "hash_ok": true,
+  "grid_rule": "hybrid_v1",
+  "frozen_digest": "71dc864eb6718fac6c0244aac328b964eb608138ce6e92416f516ebb4be76663",
+  "note": "confirms the hf-mirror repack is equivalent to the original MOT17/MOT20 archives for Theta-hat calibration purposes"
+}

@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-11-15T11:50:29+00:00",
+  "source": "local",
+  "protocol": "noise_gradient_v1",
+  "calibration_sequences": 25,
+  "grid_rule": "hybrid_v1",
+  "n_conditions_unique": 28,
+  "frozen_sha256": "71dc864eb6718fac6c0244aac328b964eb608138ce6e92416f516ebb4be76663",
+  "quality_gate": "IDSW_QUALITY_GATE_OK",
+  "selftest_passed": true,
+  "checks_passed": 17,
+  "checks_total": 17,
+  "old_key_tp_unmatched": 63,
+  "phase": "Phase 0+1 complete; Phase 2 NOT started",
+  "next_step": "user sign-off on frozen grid before any GPU run"
+}

@@ -1,0 +1,30 @@
+# Generated / local artefacts — never publish
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Large binary assets intentionally excluded
+*.npy
+*.npz
+*.zip
+*.tar.gz
+*.whl
+*.pth
+*.onnx
+*.docx
+*.html
+
+# Local state, credentials, editor files
+*.log
+.env
+*.pem
+id_rsa*
+.ssh/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
